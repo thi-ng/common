@@ -1,0 +1,25 @@
+#+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
+#+TAGS:           Write(w) Update(u) Fix(f) Check(c) noexport(n)
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+* Namespace: thi.ng.common.error
+** Namespace declaration
+#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/error.cljx
+  (ns thi.ng.common.error)
+#+END_SRC
+** Error throwing functions
+#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/error.cljx
+  (defn illegal-arg!!
+    ([x] (illegal-arg!! "illegal argument" x))
+    ([msg x]
+       (throw
+        #+clj  (IllegalArgumentException. (str msg ": " x))
+        #+cljs (js/Error. (str msg ": " x)))))
+
+  (defn unsupported!!
+    ([] (unsupported!! "unsupported operation"))
+    ([msg]
+       (throw
+        #+clj  (IllegalArgumentException. msg)
+        #+cljs (js/Error. msg))))
+#+END_SRC
