@@ -18,7 +18,7 @@
 
   (defn unsupported!!
     ([] (unsupported!! "unsupported operation"))
-    ([msg]
+    ([^String msg]
        (throw
         #+clj  (IllegalArgumentException. msg)
         #+cljs (js/Error. msg))))
