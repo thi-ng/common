@@ -83,12 +83,15 @@ http://code.thi.ng/common
                   {:pretty-print true
                    :output-to "resources/public/js/common-<<version>>.js"
                    :optimizations :simple}
-                  :jar false}]}
+                  :jar true}]}
 
     :profiles {:dev {:plugins [<<dep-cljx>>
                                <<dep-cljsbuild>>]
                      :dependencies [<<dep-cljs>>]
-                     :hooks [cljx.hooks leiningen.cljsbuild]}})
+                     :hooks [cljx.hooks]}
+               :cljs {:plugins [<<dep-cljsbuild>>]
+                      :dependencies [<<dep-cljs>>]
+                      :hooks [leiningen.cljsbuild]}})
 #+END_SRC
 
 
