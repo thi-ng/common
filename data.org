@@ -1,7 +1,7 @@
 #+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
 #+TAGS:           Write(w) Update(u) Fix(f) Check(c) noexport(n)
 
-* Namespace: thi.ng.common.data.core
+* Namespace: thi.ng.common.data
 ** Namespace declaration
 #+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
   (ns thi.ng.common.data.core)
@@ -87,7 +87,7 @@
                       (lazy-seq (step (increment v-seqs)))))))]
       (when (every? first seqs)
         (lazy-seq (step v-original-seqs)))))
-  
+
   (defn filter-tree
     "Applies `f` to root coll and every of its (nested) elements. Returns
     a vector of items for which `f` returned a truthy value."
@@ -98,7 +98,7 @@
                   (coll? node) (reduce walk acc node)
                   :default acc))]
       (reduce walk [] root)))
-  
+
   (defn bisect
     ([f coll]
        (let [[m n] (reduce
@@ -108,7 +108,7 @@
     ([f f2 coll]
        (let [[m n] (bisect f coll)]
          [(f2 m) (f2 n)])))
-  
+
   (defn neighbors
     [x coll]
     (let [n (dec (count coll))]
@@ -118,11 +118,11 @@
             [(coll (if (pos? i) (dec i) n))
              (coll (if (< i n) (inc i) 0))]
             (recur (dec i)))))))
-  
+
   (defn successive-nth
     "Returns a lazyseq of `n`-element vectors, each one containing
     a successive elements of the original collection.
-  
+
         (successive-nth 3 [1 2 3 4])
         => ([1 2 3] [2 3 4] [3 4 5])"
     ([n coll]
@@ -135,12 +135,12 @@
         (let [s (take n coll)]
           (if (= n (count s))
             (cons (vec s) (successive-nth n step (drop step coll))))))))
-  
+
   (defn successive-nth-indexed
     "Returns a lazyseq of nested 2-element vectors, each one containing
     a vector of `n` successive elements of the original collection and
     an sequence index.
-  
+
         (successive-nth-indexed 2 [10 20 30 40])
         => ([[10 20] 0] [[20 30] 1] [[30 40] 2])"
     ([n coll] (successive-nth-indexed n 0 coll))
@@ -150,12 +150,12 @@
           (if (= n (count s))
             (cons [(vec s) idx]
                   (successive-nth-indexed n (inc idx) (rest coll))))))))
-  
+
   (defn apply-to-keys
     "Applies `f` with `args` to all given `keys` in `type`."
     [type keys f & args]
     (reduce (fn[acc k] (assoc acc k (apply f (get type k) args))) type keys))
-  
+
   (defn reduce-pairs
     ([f1 f2 coll] (reduce-pairs f1 f2 nil coll))
     ([f1 f2 acc coll]
@@ -164,20 +164,20 @@
            (if acc
              (reduce f1 acc pairs)
              (reduce f1 pairs))))))
-  
+
   (defn wrap-seq
     [s head tail]
     (concat
      (if (sequential? head) (concat head s) (cons head s))
      (if (sequential? tail) tail [tail])))
-  
+
   (defn append-first
     [xs] (concat xs [(first xs)]))
-  
+
   (defn rotate-left
     [n xs]
     (concat (drop n xs) (take n xs)))
-  
+
   (defn all-after
     "Returns a new collection of all items after `item` in original `coll`.
     If `coll` is a vector, the new collection is created with `subvec`.
@@ -187,7 +187,7 @@
       (if (pos? idx)
         (if (vector? coll) (subvec coll idx) (drop idx coll))
         coll)))
-  
+
   (defn iterate-while
     [pred f x]
     (lazy-seq
@@ -197,16 +197,102 @@
 ** String functions
 #+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
   (defn unwrap-string [s n] (subs s n (- (count s) n)))
-
+  
   (defn wrap [a b s] (str a s b))
-
+  
   (defn stringify-keys
     [m]
-    (into
-     {} (map (fn [[k v :as e]] (if (keyword? k) [(name k) v] e)) m)))
+    (into {} (map (fn [[k v :as e]] (if (keyword? k) [(name k) v] e)) m)))
+  
+  (defn demunge-flags
+    "Takes a keyword or string and string/seq of items, returns map with
+    items as keys and boolean values indicating if an item has been
+    found in the string representation of the kw. If `kw` is nil, return
+    nil.
+  
+        (demunge-flags :cad \"abcd\")
+        #_=> {:a true :b false :c true :d true}"
+    [kw xs]
+    (when kw
+      (let [flags (name kw)]
+        (reduce
+         (fn [acc x]
+           (let [x (str x)]
+             (assoc acc (keyword x) (<= 0 (.indexOf flags x)))))
+         {} xs))))
+  
+  (defn demunge-flags-seq
+    "Like `demunge-flags` but returns lazyseq of booleans in same order as xs.
+  
+        (demunge-flags-seq :cad \"abcd\")
+        #_=> [true false true true]"
+    [kw xs]
+    (when kw
+      (let [flags (name kw)]
+        (map #(<= 0 (.indexOf flags (str %))) xs))))
 #+END_SRC
 
-* Namespace: thi.ng.data.byteutils
+* Namespace: thi.ng.common.data.graph
+** Namespace declaration
+#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/graph.cljx
+  (ns thi.ng.common.data.graph)
+#+END_SRC
+** Disjoint Sets
+#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/graph.cljx
+  (defprotocol PUnionFind
+    (canonical [this p])
+    (unified? [this p q])
+    (members [this p])
+    (add-single [this p])
+    (union [this [p q]] [this p q]))
+
+  (defrecord DisjointSet [canonical components]
+    PUnionFind
+    (canonical [this k]
+      (or (canonical k) (when (components k) k)))
+    (unified? [this k1 k2]
+      (= (canonical k1 k1) (canonical k2 k2)))
+    (members [this p]
+      (components (canonical p)))
+    (add-single
+      [this x]
+      (if-not (canonical x)
+        (-> this
+            (assoc-in [:canonical x] x)
+            (assoc-in [:components x] [x]))
+        this))
+    (union [this [k1 k2]]
+      (union this k1 k2))
+    (union [this k1 k2]
+      (let [canon1 (canonical k1 k1)
+            canon2 (canonical k2 k2)]
+        (if (= canon1 canon2)
+          this
+          (let [comp1 (or (components canon1) [canon1])
+                comp2 (or (components canon2) [canon2])
+                [canon1 canon2 comp1 comp2] (if (<= (count comp1) (count comp2))
+                                              [canon1 canon2 comp1 comp2]
+                                              [canon2 canon1 comp2 comp1])
+                canonical' (into canonical (for [item comp1] [item canon2]))
+                components' (-> components
+                                (dissoc canon1)
+                                (assoc canon2 (into comp2 comp1)))]
+            (assoc this :canonical canonical' :components components'))))))
+
+  (defn into-set
+    [ds xs]
+    (reduce
+     (fn [ds x]
+       (if (and (sequential? x) (= 2 (count x)))
+         (union ds x)
+         (add-single ds x)))
+     ds xs))
+
+  (defn disjoint-set
+    ([] (DisjointSet. {} {}))
+    ([xs] (into-set (DisjointSet. {} {}) xs)))
+#+END_SRC
+* Namespace: thi.ng.common.data.byteutils
 ** TODO refactor to be CLJS compatible
 ** Namespace declaration
 #+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/byteutils.cljx
