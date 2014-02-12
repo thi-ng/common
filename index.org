@@ -15,7 +15,7 @@
 
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.1.0-SNAPSHOT
+0.1.1-SNAPSHOT
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 http://code.thi.ng/common
