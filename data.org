@@ -3,11 +3,11 @@
 
 * Namespace: thi.ng.common.data
 ** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/core.cljx :mkdirp yes :padline no
   (ns thi.ng.common.data.core)
 #+END_SRC
 ** Indexing functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/core.cljx
   (defn index
     [i t]
     (if-let [tt (get i t)] [i tt] [(conj i t) t]))
@@ -49,7 +49,7 @@
       (zipmap keys (if (= f2 identity) keys (map f2 keys)))))
 #+END_SRC
 ** Sets
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/core.cljx
 (defn interval-set
   [& ivals]
   (->> ivals
@@ -67,7 +67,7 @@
           (some (fn [[a b]] (and (<= a x) (<= x b))) ivals)))))
 #+END_SRC
 ** Sequence functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/core.cljx
   (defn cartesian-product
     "All the ways to take one item from each sequence
     (taken from clojure.contrib.combinatorics)"
@@ -195,7 +195,7 @@
        (cons x (iterate-while pred f (f x))))))
 #+END_SRC
 ** String functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/core.cljx
   (defn unwrap-string [s n] (subs s n (- (count s) n)))
   
   (defn wrap [a b s] (str a s b))
@@ -234,11 +234,11 @@
 
 * Namespace: thi.ng.common.data.graph
 ** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/graph.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/graph.cljx :mkdirp yes :padline no
   (ns thi.ng.common.data.graph)
 #+END_SRC
 ** Disjoint Sets
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/graph.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/graph.cljx
   (defprotocol PUnionFind
     (canonical [this p])
     (unified? [this p q])
@@ -295,19 +295,19 @@
 * Namespace: thi.ng.common.data.byteutils
 ** TODO refactor to be CLJS compatible
 ** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/byteutils.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/byteutils.cljx :mkdirp yes :padline no
   (ns thi.ng.common.data.byteutils
     #+clj
     (:import
      [java.io OutputStream InputStream]))
 #+END_SRC
 ** Conversion functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/byteutils.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/byteutils.cljx
   #+clj (defn int->byte [x] (if (> x 0x7f) (- x 0x100) x))
   #+clj (defn byte->int [x] (if (neg? x) (+ x 0x100) x))
 #+END_SRC
 ** Write functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/byteutils.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/byteutils.cljx
   ,#+clj
   (defn write-str-bytes
     [^OutputStream out ^String x]
@@ -364,7 +364,7 @@
     [out [x y z]])
 #+END_SRC
 ** Read functions
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/data/byteutils.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/data/byteutils.cljx
   ,#+clj
   (defn read-int16-le
     [^InputStream in]

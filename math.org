@@ -6,11 +6,11 @@
 
 ** thi.ng.common.math.core
 *** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx :mkdirp yes :padline no
   (ns thi.ng.common.math.core)
 #+END_SRC
 *** Constants
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (def ^:const PI Math/PI)
   (def ^:const TWO_PI (* PI 2))
   (def ^:const HALF_PI (/ PI 2))
@@ -34,16 +34,16 @@
   (def ^:const RAD (/ PI 180.0))
 #+END_SRC
 **** Dynamic \epsilon (epsilon) config
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (def ^:dynamic *eps* 1e-6)
 #+END_SRC
 **** Dynamic PRNG
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (def ^:dynamic *rnd* #+clj (java.util.Random.) #+cljs Math/random)
 #+END_SRC
 *** Functions
 **** Basics
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn ensure-even
     "Returns x if even or `x+1` if `x` is odd."
     [x] (if (even? x) x (inc x)))
@@ -77,7 +77,7 @@
            (if (neg? x) -1 1))))
 #+END_SRC
 **** Intervals
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn map-interval
     "Maps x from one interval into another. Intervals can be defined as vectors."
     ([x [minIn maxIn] [minOut maxOut]]
@@ -107,7 +107,7 @@
     [x] (map #(/ % (double x)) (range (inc x))))
 #+END_SRC
 **** Interpolation
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn mix
     [a b t] (+ (* (- b a) t) a))
 
@@ -120,7 +120,7 @@
       (* t (* t (- 3.0 (* 2.0 t))))))
 #+END_SRC
 **** Rounding
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   #+clj  (defn floor
            [x] (long (Math/floor x)))
   #+cljs (defn floor
@@ -155,13 +155,13 @@
     [x y] (if (> x y) (- x y) 0))
 #+END_SRC
 **** Trigonometry
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn radians [x] (* x RAD))
 
   (defn degrees [x] (* x DEG))
 #+END_SRC
 **** Advanced
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn maxmag
     [x y]
     (let [ax (Math/abs x) ay (Math/abs y)]
@@ -205,7 +205,7 @@
     (let [h (* k t)] (* h (Math/exp (- 1.0 h)))))
 #+END_SRC
 **** Statistics
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn percentile-index
     [n num]
     (dec
@@ -240,7 +240,7 @@
 ****** http://en.wikipedia.org/wiki/Quartile
 
 **** Randomness
-#+BEGIN_SRC clojure :tangle babel/src-cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   #+clj  (defn random
            ([] (.nextDouble *rnd*))
            ([max] (* (.nextDouble *rnd*) max))
