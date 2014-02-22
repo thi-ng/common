@@ -47,29 +47,31 @@
   (defn ensure-even
     "Returns x if even or `x+1` if `x` is odd."
     [x] (if (even? x) x (inc x)))
-
+  
   (defn ensure-odd
     "Returns x if odd or `x+1` if `x` is even."
     [x] (if (even? x) (inc x) x))
-
-  #+clj  (definline madd "Returns a * b + c." [a b c] `(+ (* ~a ~b) ~c))
-  #+cljs (defn madd "Returns a * b + c."  [a b c] (+ (* a b) c))
-
-  #+clj  (defn abs [x] (if (neg? x) (- x) x))
-  #+cljs (def abs Math/abs)
-
+  
+  ,#+clj  (definline madd "Returns a * b + c." [a b c] `(+ (* ~a ~b) ~c))
+  ,#+cljs (defn madd "Returns a * b + c."  [a b c] (+ (* a b) c))
+  
+  ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
+  ,#+cljs (def abs Math/abs)
+  
   (defn abs-diff
     [x y] (abs (- x y)))
-
+  
   (defn delta=
     "Compares the absolute difference between a and b and returns true
-    if less than delta."
+    if less than delta. If a or b are nil, returns only true if both are nil."
     ([a b] (delta= a b *eps*))
     ([a b delta]
-       (if (number? a)
-         (if (number? b) (<= (abs (- b a)) delta) false)
-         (every? true? (map #(delta= % %2 delta) a b)))))
-
+       (if (and a b)
+         (if (number? a)
+           (if (number? b) (<= (abs (- b a)) delta) false)
+           (every? true? (map #(delta= % %2 delta) a b)))
+         (= a b))))
+  
   (defn signum
     ([x] (if (neg? x) -1 (if (zero? x) 0 1)))
     ([x delta]
