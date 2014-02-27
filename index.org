@@ -16,7 +16,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.1.1-SNAPSHOT
+0.1.2-SNAPSHOT
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 http://code.thi.ng/common
@@ -44,6 +44,10 @@ target/common-<<version>>.js
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
 [org.clojure/clojurescript "0.0-2173"]
+#+END_SRC
+**** [[https://github.com/thi-ng/macromath][Macromath]]
+#+BEGIN_SRC clojure :noweb-ref dep-mmath
+[thi.ng/macromath "0.2.0"]
 #+END_SRC
 *** Development
 **** [[https://github.com/lynaghk/cljx][Cljx]]
@@ -88,7 +92,8 @@ target/common-<<version>>.js
     :url "<<project-url>>"
     :license {:name "Apache Software License"
               :url "http://www.apache.org/licenses/LICENSE-2.0"}
-    :dependencies [<<dep-clj>>]
+    :dependencies [<<dep-clj>>
+                   <<dep-mmath>>]
   
     :source-paths ["src/cljx"]
     :test-paths ["<<gen-test-path>>"]

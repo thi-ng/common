@@ -7,7 +7,9 @@
 ** thi.ng.common.math.core
 *** Namespace declaration
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx :mkdirp yes :padline no
-  (ns thi.ng.common.math.core)
+  (ns thi.ng.common.math.core
+    ,#+clj (:require [thi.ng.macromath.core :as mm])
+    ,#+cljs (:require-macros [thi.ng.macromath.core :as mm]))
 #+END_SRC
 *** Constants
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
@@ -51,9 +53,6 @@
   (defn ensure-odd
     "Returns x if odd or `x+1` if `x` is even."
     [x] (if (even? x) (inc x) x))
-  
-  ,#+clj  (definline madd "Returns a * b + c." [a b c] `(+ (* ~a ~b) ~c))
-  ,#+cljs (defn madd "Returns a * b + c."  [a b c] (+ (* a b) c))
   
   ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
   ,#+cljs (def abs Math/abs)
@@ -101,7 +100,7 @@
     [x min max] (if (< x min) min (if (> x max) max x)))
   
   (defn clamp-normalized
-    [x] (clamp x -1.0 1.0))
+    [x] (if (< x -1.0) -1.0 (if (> x 1.0) 1.0 x)))
   
   (defn norm-range
     "Returns lazy-seq of values in the closed interval [0.0, 1.0] at
@@ -111,15 +110,15 @@
 **** Interpolation
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn mix
-    [a b t] (+ (* (- b a) t) a))
+    [a b t] (mm/submadd b a t a))
 
   (defn step
     [edge x] (if (< x edge) 0.0 1.0))
 
   (defn smoothstep
     [e0 e1 x]
-    (let [t (clamp (/ (- x e0) (- e1 e0)) 0.0 1.0)]
-      (* t (* t (- 3.0 (* 2.0 t))))))
+    (let [t (clamp (mm/subdiv x e0 e1 e0) 0.0 1.0)]
+      (* t (* t (mm/madd t -2.0 3.0)))))
 #+END_SRC
 **** Rounding
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
@@ -194,7 +193,7 @@
       (- x (* k y))))
 
   (defn hypot
-    [x y] (Math/sqrt (+ (* x x) (* y y))))
+    [x y] (Math/sqrt (mm/madd x x y y)))
 
   (defn rootn
     [x y] (Math/pow x (/ 1.0 y)))
@@ -207,12 +206,16 @@
     (let [h (* k t)] (* h (Math/exp (- 1.0 h)))))
 #+END_SRC
 **** Statistics
+
+- http://en.wikipedia.org/wiki/Percentile
+- http://en.wikipedia.org/wiki/Quartile
+
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (defn percentile-index
     [n num]
     (dec
      (if (< n 100)
-       (int (Math/round (madd (/ n 100.0) num 0.5)))
+       (int (Math/round (mm/madd (/ n 100.0) num 0.5)))
        num)))
 
   (defn percentile
@@ -237,129 +240,20 @@
     (let [[a b] (quartile-range n (count sorted))]
       (->> sorted (drop a) (take (- b a)))))
 #+END_SRC
-***** References
-****** http://en.wikipedia.org/wiki/Percentile
-****** http://en.wikipedia.org/wiki/Quartile
 
 **** Randomness
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   #+clj  (defn random
            ([] (.nextDouble *rnd*))
            ([max] (* (.nextDouble *rnd*) max))
-           ([min max] (+ (* (.nextDouble *rnd*) (- max min)) min)))
+           ([min max] (mm/submadd max min (.nextDouble *rnd*) min)))
   #+cljs (defn random
            ([] (*rnd*))
            ([max] (* (*rnd*) max))
-           ([min max] (+ (* (*rnd*) (- max min)) min)))
+           ([min max] (mm/submadd max min (*rnd*) min)))
 
   #+clj  (defn randnorm
            [] (dec (* (.nextDouble *rnd*) 2.0)))
   #+cljs (defn randnorm
            [] (dec (* (*rnd*) 2.0)))
-#+END_SRC
-** thi.ng.comman.math.macros
-*** Base expression macro (Clojure)
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/macros.clj :mkdirp yes :padline no
-  (ns thi.ng.common.math.macros)
-  
-  (defmacro defmathop
-    "Constructs macro to build inlined nested expressions with f applied
-    to inner pairs and f2 to combine results."
-    [name f f2]
-    `(defmacro ~name
-       ([a# b# c#]
-          `(~~f2 (~~f ~a# ~b#) ~c#))
-       ([a# b# c# d#]
-          `(~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)))
-       ([a# b# c# d# e#]
-          `(~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) ~e#))
-       ([a# b# c# d# e# f#]
-          `(~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)))
-       ([a# b# c# d# e# f# g#]
-          `(~~f2 (~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)) ~g#))
-       ([a# b# c# d# e# f# g# h#]
-          `(~~f2 (~~f2 (~~f2 (~~f ~a# ~b#) (~~f ~c# ~d#)) (~~f ~e# ~f#)) (~~f ~g# ~h#)))))
-  
-  (defmathop add + +)
-  (defmathop sub - -)
-  (defmathop mul * *)
-  (defmathop div / /)
-  (defmathop madd * +)
-  (defmathop msub * -)
-  (defmathop addm + *)
-  (defmathop subm - *)
-#+END_SRC
-*** Base expression macro (ClojureScript)
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/macros_cljs.clj :mkdirp yes :padline no
-  (ns thi.ng.common.math.macros-cljs)
-  
-  (defmacro defmathop
-    "Constructs macro to build inlined nested expressions with f applied
-      to inner pairs and f2 to combine results."
-    [name f f2]
-    `(defmacro ~name
-       ([a# b# c#]
-          (list '~'js* (str "((~{} " ~f " ~{}) "
-                            ~f2 " ~{})")
-                a# b# c#))
-       ([a# b# c# d#]
-          (list '~'js* (str "((~{} " ~f " ~{}) "
-                            ~f2 " (~{} " ~f " ~{}))")
-                a# b# c# d#))
-       ([a# b# c# d# e#]
-          (list '~'js* (str "(((~{} " ~f " ~{}) "
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " ~{})")
-                a# b# c# d# e#))
-       ([a# b# c# d# e# f#]
-          (list '~'js* (str "(((~{} " ~f " ~{}) "
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " (~{} " ~f " ~{}))")
-                a# b# c# d# e# f#))
-       ([a# b# c# d# e# f# g#]
-          (list '~'js* (str "((((~{} " ~f " ~{}) "
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " ~{})")
-                a# b# c# d# e# f# g#))
-       ([a# b# c# d# e# f# g# h#]
-          (list '~'js* (str "((((~{} " ~f " ~{}) "
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " (~{} " ~f " ~{}))"
-                            ~f2 " (~{} " ~f " ~{}))")
-                a# b# c# d# e# f# g# h#))))
-
-  (defmathop add "+" "+")
-  (defmathop sub "-" "-")
-  (defmathop mul "*" "*")
-  (defmathop div "/" "/")
-  (defmathop madd "*" "+")
-  (defmathop msub "*" "-")
-  (defmathop addm "+" "*")
-  (defmathop subm "-" "*")
-#+END_SRC
-*** Higher level forms
-#+BEGIN_SRC clojure :noweb-ref math-ops  
-  (defmacro maddsub
-    "Like madd, but the last 1 or 2 args are subtracted as product.
-    E.g. (maddsub a b c d e f) = (- (+ (* a b) (* c d)) (* e f))"
-    ([a b c d e f]
-       `(- (madd ~a ~b ~c ~d) (* ~e ~f)))
-    ([a b c d e f g h]
-       `(- (madd ~a ~b ~c ~d ~e ~f) (* ~g ~h))))
-  
-  (defmacro msubadd
-    "Like msub, but the last 1 or 2 args are added as product.
-    E.g. (msubadd a b c d e f) = (+ (- (* a b) (* c d)) (* e f))"
-    ([a b c d e f]
-       `(+ (msub ~a ~b ~c ~d) (* ~e ~f)))
-    ([a b c d e f g h]
-       `(+ (msub ~a ~b ~c ~d ~e ~f) (* ~g ~h))))
-#+END_SRC
-*** Tangle for CLJ & CLJS                                          :noexport:
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/macros.clj :noweb yes
-  <<math-ops>>
-#+END_SRC
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/macros_cljs.clj :noweb yes
-  <<math-ops>>
 #+END_SRC
