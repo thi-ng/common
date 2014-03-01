@@ -14,11 +14,11 @@
 *** Constants
 #+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
   (def ^:const PI Math/PI)
-  (def ^:const TWO_PI (* PI 2))
-  (def ^:const HALF_PI (/ PI 2))
-  (def ^:const THIRD_PI (/ PI 3))
-  (def ^:const QUARTER_PI (/ PI 4))
-  (def ^:const SIXTH_PI (/ PI 6))
+  (def ^:const TWO_PI (* PI 2.0))
+  (def ^:const HALF_PI (/ PI 2.0))
+  (def ^:const THIRD_PI (/ PI 3.0))
+  (def ^:const QUARTER_PI (/ PI 4.0))
+  (def ^:const SIXTH_PI (/ PI 6.0))
   (def ^:const THREE_HALVES_PI (* PI 1.5))
 
   (def ^:const MAX 1.7976931348623157E308)

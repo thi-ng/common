@@ -1,0 +1,22 @@
+#+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
+#+TAGS:           write(w) update(u) fix(f) verify(v) noexport(n)
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+* thi.ng.common.test.math.core
+** Namespace declaration
+#+BEGIN_SRC clojure :tangle ../babel/test/cljx/thi/ng/common/test/math/core.cljx :mkdirp yes :padline no
+  (ns thi.ng.common.test.math.core
+    ,#+cljs
+    (:require-macros
+     [cemerick.cljs.test :refer [is deftest]])
+    (:require
+     [thi.ng.common.math.core :as m]
+     ,#+clj [clojure.test :refer :all]
+     ,#+cljs [cemerick.cljs.test :as t]))
+#+END_SRC
+** Main context
+#+BEGIN_SRC clojure :tangle ../babel/test/cljx/thi/ng/common/test/math/core.cljx
+  (deftest math-core
+    (is (m/in-range? -1 1 (m/random -1 1))))
+#+END_SRC
+
