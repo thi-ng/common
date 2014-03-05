@@ -205,8 +205,24 @@
     [k t]
     (let [h (* k t)] (* h (Math/exp (- 1.0 h)))))
 #+END_SRC
-**** Statistics
+**** Randomness
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+  #+clj  (defn random
+           ([] (.nextDouble *rnd*))
+           ([max] (* (.nextDouble *rnd*) max))
+           ([min max] (mm/submadd max min (.nextDouble *rnd*) min)))
+  #+cljs (defn random
+           ([] (*rnd*))
+           ([max] (* (*rnd*) max))
+           ([min max] (mm/submadd max min (*rnd*) min)))
 
+  #+clj  (defn randnorm
+           [] (dec (* (.nextDouble *rnd*) 2.0)))
+  #+cljs (defn randnorm
+           [] (dec (* (*rnd*) 2.0)))
+#+END_SRC
+**** Statistics
+***** Percentiles
 - http://en.wikipedia.org/wiki/Percentile
 - http://en.wikipedia.org/wiki/Quartile
 
@@ -241,19 +257,12 @@
       (->> sorted (drop a) (take (- b a)))))
 #+END_SRC
 
-**** Randomness
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
-  #+clj  (defn random
-           ([] (.nextDouble *rnd*))
-           ([max] (* (.nextDouble *rnd*) max))
-           ([min max] (mm/submadd max min (.nextDouble *rnd*) min)))
-  #+cljs (defn random
-           ([] (*rnd*))
-           ([max] (* (*rnd*) max))
-           ([min max] (mm/submadd max min (*rnd*) min)))
-
-  #+clj  (defn randnorm
-           [] (dec (* (.nextDouble *rnd*) 2.0)))
-  #+cljs (defn randnorm
-           [] (dec (* (*rnd*) 2.0)))
+***** Distributions
+#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx 
+  (defn normdist-weights
+    ([n] (normdist-weights n 1.0))
+    ([n scale]
+       (let [ws (repeatedly n random)
+             s (/ scale (reduce + ws))]
+         (map #(* s %) ws))))
 #+END_SRC
