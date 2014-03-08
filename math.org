@@ -61,14 +61,17 @@
     [x y] (abs (- x y)))
   
   (defn delta=
-    "Compares the absolute difference between a and b and returns true
-    if less than delta. If a or b are nil, returns only true if both are nil."
+    "Takes two numbers or seqs of numbers and returns true if their
+    absolute difference is less than `delta` (`*eps` used by default).
+    If either `a` or `b` are nil, returns only true if the other is nil
+    as well."
     ([a b] (delta= a b *eps*))
     ([a b delta]
        (if (and a b)
          (if (number? a)
            (if (number? b) (<= (abs (- b a)) delta) false)
-           (every? true? (map #(delta= % %2 delta) a b)))
+           (and (= (count a) (count b))
+                (every? true? (map #(<= (abs (- % %2)) delta) a b))))
          (= a b))))
   
   (defn signum
