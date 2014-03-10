@@ -16,7 +16,7 @@
 * About the project
 ** Injected properties                                             :noexport:
 #+BEGIN_SRC clojure :exports none :noweb-ref version
-0.1.2-SNAPSHOT
+0.1.2
 #+END_SRC
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
 http://code.thi.ng/common
@@ -31,7 +31,11 @@ target/test-classes
 target/common-<<version>>.js
 #+END_SRC
 
-** TODO Objectives
+** Description
+
+Common utility functions shared by other projects in the [[https://github.com/thi-ng/][thi.ng]]
+collection of Clojure & ClojureScript libraries.
+
 ** License
    This project is open source and licensed under the [[http://www.apache.org/licenses/LICENSE-2.0][Apache Software License 2.0]].
 
@@ -39,7 +43,7 @@ target/common-<<version>>.js
 *** Runtime
 **** [[https://github.com/clojure/clojure][Clojure]]
 #+BEGIN_SRC clojure :noweb-ref dep-clj
-[org.clojure/clojure "1.6.0-beta1"]
+[org.clojure/clojure "1.6.0-beta2"]
 #+END_SRC
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
@@ -47,7 +51,7 @@ target/common-<<version>>.js
 #+END_SRC
 **** [[https://github.com/thi-ng/macromath][Macromath]]
 #+BEGIN_SRC clojure :noweb-ref dep-mmath
-[thi.ng/macromath "0.2.1-SNAPSHOT"]
+[thi.ng/macromath "0.2.1"]
 #+END_SRC
 *** Development
 **** [[https://github.com/lynaghk/cljx][Cljx]]
