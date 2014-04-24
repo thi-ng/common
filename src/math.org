@@ -1,18 +1,9 @@
-#+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
-#+TAGS:           write(w) update(u) fix(f) verify(v) noexport(n)
-#+EXPORT_EXCLUDE_TAGS: noexport
+#+SETUPFILE: setup.org
 
-* Namespace: thi.ng.common.math
+* Namespace: thi.ng.common.math.core
 
-** thi.ng.common.math.core
-*** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx :mkdirp yes :padline no
-  (ns thi.ng.common.math.core
-    ,#+clj (:require [thi.ng.macromath.core :as mm])
-    ,#+cljs (:require-macros [thi.ng.macromath.core :as mm]))
-#+END_SRC
-*** Constants
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+** Constants
+#+BEGIN_SRC clojure :noweb-ref const
   (def ^:const PI Math/PI)
   (def ^:const TWO_PI (* PI 2.0))
   (def ^:const HALF_PI (/ PI 2.0))
@@ -35,17 +26,17 @@
   (def ^:const DEG (/ 180.0 PI))
   (def ^:const RAD (/ PI 180.0))
 #+END_SRC
-**** Dynamic \epsilon (epsilon) config
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Dynamic \epsilon (epsilon) config
+#+BEGIN_SRC clojure :noweb-ref const
   (def ^:dynamic *eps* 1e-6)
 #+END_SRC
-**** Dynamic PRNG
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Dynamic PRNG
+#+BEGIN_SRC clojure :noweb-ref const
   (def ^:dynamic *rnd* #+clj (java.util.Random.) #+cljs Math/random)
 #+END_SRC
-*** Functions
-**** Basics
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+** Functions
+*** Basics
+#+BEGIN_SRC clojure :noweb-ref math
   (defn ensure-even
     "Returns x if even or `x+1` if `x` is odd."
     [x] (if (even? x) x (inc x)))
@@ -80,8 +71,8 @@
        (if (delta= 0.0 x delta) 0
            (if (neg? x) -1 1))))
 #+END_SRC
-**** Intervals
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Intervals
+#+BEGIN_SRC clojure :noweb-ref math
   (defn map-interval
     "Maps x from one interval into another. Intervals can be defined as vectors."
     ([x [minIn maxIn] [minOut maxOut]]
@@ -110,8 +101,8 @@
     resolution 1/x."
     [x] (map #(/ % (double x)) (range (inc x))))
 #+END_SRC
-**** Interpolation
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Interpolation
+#+BEGIN_SRC clojure :noweb-ref math
   (defn mix
     [a b t] (mm/submadd b a t a))
 
@@ -123,8 +114,8 @@
     (let [t (clamp (mm/subdiv x e0 e1 e0) 0.0 1.0)]
       (* t (* t (mm/madd t -2.0 3.0)))))
 #+END_SRC
-**** Rounding
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Rounding
+#+BEGIN_SRC clojure :noweb-ref math
   #+clj  (defn floor
            [x] (long (Math/floor x)))
   #+cljs (defn floor
@@ -158,14 +149,14 @@
   (defn fdim
     [x y] (if (> x y) (- x y) 0))
 #+END_SRC
-**** Trigonometry
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Trigonometry
+#+BEGIN_SRC clojure :noweb-ref math
   (defn radians [x] (* x RAD))
 
   (defn degrees [x] (* x DEG))
 #+END_SRC
-**** Advanced
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Advanced
+#+BEGIN_SRC clojure :noweb-ref math
   (defn maxmag
     [x y]
     (let [ax (Math/abs x) ay (Math/abs y)]
@@ -208,8 +199,8 @@
     [k t]
     (let [h (* k t)] (* h (Math/exp (- 1.0 h)))))
 #+END_SRC
-**** Randomness
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+*** Randomness
+#+BEGIN_SRC clojure :noweb-ref math
   #+clj  (defn random
            ([] (.nextDouble *rnd*))
            ([max] (* (.nextDouble *rnd*) max))
@@ -224,12 +215,12 @@
   #+cljs (defn randnorm
            [] (dec (* (*rnd*) 2.0)))
 #+END_SRC
-**** Statistics
-***** Percentiles
+*** Statistics
+**** Percentiles
 - http://en.wikipedia.org/wiki/Percentile
 - http://en.wikipedia.org/wiki/Quartile
 
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx
+#+BEGIN_SRC clojure :noweb-ref math
   (defn percentile-index
     [n num]
     (dec
@@ -260,12 +251,24 @@
       (->> sorted (drop a) (take (- b a)))))
 #+END_SRC
 
-***** Distributions
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/math/core.cljx 
+**** Distributions
+#+BEGIN_SRC clojure :noweb-ref math 
   (defn normdist-weights
     ([n] (normdist-weights n 1.0))
     ([n scale]
        (let [ws (repeatedly n random)
              s (/ scale (reduce + ws))]
          (map #(* s %) ws))))
+#+END_SRC
+
+
+** Complete namespace definition                                   :noexport:
+#+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/math/core.cljx :noweb yes :mkdirp yes :padline no
+  (ns thi.ng.common.math.core
+    ,#+clj (:require [thi.ng.macromath.core :as mm])
+    ,#+cljs (:require-macros [thi.ng.macromath.core :as mm]))
+
+  <<const>>
+
+  <<math>>
 #+END_SRC

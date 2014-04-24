@@ -1,14 +1,9 @@
-#+SEQ_TODO:       TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
-#+TAGS:           write(w) update(u) fix(f) verify(v) noexport(n)
-#+EXPORT_EXCLUDE_TAGS: noexport
+#+SETUPFILE: setup.org
 
 * Namespace: thi.ng.common.error
-** Namespace declaration
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/error.cljx :mkdirp yes :padline no
-  (ns thi.ng.common.error)
-#+END_SRC
+
 ** Error throwing functions
-#+BEGIN_SRC clojure :tangle babel/src/cljx/thi/ng/common/error.cljx
+#+BEGIN_SRC clojure :noweb-ref errors
   (defn throw!
     [^String msg]
     (throw
@@ -34,4 +29,11 @@
        (throw
         ,#+clj  (UnsupportedOperationException. msg)
         ,#+cljs (js/Error. msg))))
+#+END_SRC
+
+** Complete namespace definition                                   :noexport:
+#+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/error.cljx :noweb yes :mkdirp yes :padline no
+  (ns thi.ng.common.error)
+
+  <<errors>>
 #+END_SRC
