@@ -23,6 +23,9 @@
 
   (def ^:const LOG2 (Math/log 2.0))
 
+  (def ^:const POS_INF #+clj Double/POSITIVE_INFINITY #+cljs (.-POSITIVE_INFINITY js/Number))
+  (def ^:const NEG_INF #+clj Double/NEGATIVE_INFINITY #+cljs (.-NEGATIVE_INFINITY js/Number))
+
   (def ^:const DEG (/ 180.0 PI))
   (def ^:const RAD (/ PI 180.0))
 #+END_SRC
