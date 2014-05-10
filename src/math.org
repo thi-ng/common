@@ -76,29 +76,43 @@
 #+END_SRC
 *** Intervals
 #+BEGIN_SRC clojure :noweb-ref math
+  (defn clamp
+    [x min max] (if (< x min) min (if (> x max) max x)))
+
+  (defn clamp-normalized
+    [x] (if (< x -1.0) -1.0 (if (> x 1.0) 1.0 x)))
+
   (defn map-interval
     "Maps x from one interval into another. Intervals can be defined as vectors."
-    ([x [minIn maxIn] [minOut maxOut]]
-       (+ (* (- maxOut minOut) (/ (- x minIn) (- maxIn minIn))) minOut))
-    ([x minIn maxIn minOut maxOut]
-       (+ (* (- maxOut minOut) (/ (- x minIn) (- maxIn minIn))) minOut)))
-  
+    ([x [in1 in2] [out1 out2]]
+       (mm/madd (- out2 out1) (mm/subdiv x in1 in2 in1) out1))
+    ([x in1 in2 out1 out2]
+       (mm/madd (- out2 out1) (mm/subdiv x in1 in2 in1) out1)))
+
+  (defn map-interval-clamped
+    ([x [in1 in2] [out1 out2]]
+       (map-interval-clamped x in1 in2 out1 out2))
+    ([x in1 in2 out1 out2]
+       (if (<= x in1)
+         out1
+         (if (>= x in2)
+           out2
+           (map-interval x in1 in2 out1 out2))))
+    ([x [in1 in2] [out1 out2] [c1 c2]]
+       (clamp (map-interval x in1 in2 out1 out2) c1 c2))
+    ([x in1 in2 out1 out2 c1 c2]
+       (clamp (map-interval x in1 in2 out1 out2) c1 c2)))
+
   (defn in-range?
     "Returns true if x >= min and x <= max."
     ([[min max] x]
        (and (>= x min) (<= x max)))
     ([min max x]
        (and (>= x min) (<= x max))))
-  
+
   (defn wrap-range
     ([x y] (let [x (rem x y)] (if (neg? x) (+ x y) x))))
-  
-  (defn clamp
-    [x min max] (if (< x min) min (if (> x max) max x)))
-  
-  (defn clamp-normalized
-    [x] (if (< x -1.0) -1.0 (if (> x 1.0) 1.0 x)))
-  
+
   (defn norm-range
     "Returns lazy-seq of values in the closed interval [0.0, 1.0] at
     resolution 1/x."
@@ -196,7 +210,7 @@
     [x y] (Math/pow x (/ 1.0 y)))
 
   (defn rsqrt
-    [x] (/ 1.0 (Math/sqrt x)))
+    [x] (let [r (Math/sqrt x)] (if (pos? r) (/ 1.0 r) 0)))
 
   (defn impulse
     [k t]
