@@ -172,7 +172,9 @@
 
   (defn rotate-left
     [n xs]
-    (concat (drop n xs) (take n xs)))
+    (if (vector? xs)
+      (into (subvec xs n) (subvec xs 0 n))
+      (concat (drop n xs) (take n xs))))
 
   (defn all-after
     "Returns a new collection of all items after `item` in original `coll`.
