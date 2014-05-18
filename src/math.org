@@ -176,7 +176,7 @@
 #+BEGIN_SRC clojure :noweb-ref math
   (defn maxmag
     [x y]
-    (let [ax (Math/abs x) ay (Math/abs y)]
+    (let [ax (abs x) ay (abs y)]
       (cond
        (> ax ay) x
        (> ay ax) y
@@ -184,7 +184,7 @@
 
   (defn minmag
     [x y]
-    (let [ax (Math/abs x) ay (Math/abs y)]
+    (let [ax (abs x) ay (abs y)]
       (cond
        (< ax ay) x
        (< ay ax) y
@@ -219,16 +219,16 @@
 *** Randomness
 #+BEGIN_SRC clojure :noweb-ref math
   #+clj  (defn random
-           ([] (.nextDouble *rnd*))
-           ([max] (* (.nextDouble *rnd*) max))
-           ([min max] (mm/submadd max min (.nextDouble *rnd*) min)))
+           ([] (.nextDouble ^java.util.Random *rnd*))
+           ([max] (* (.nextDouble ^java.util.Random *rnd*) max))
+           ([min max] (mm/submadd max min (.nextDouble ^java.util.Random *rnd*) min)))
   #+cljs (defn random
            ([] (*rnd*))
            ([max] (* (*rnd*) max))
            ([min max] (mm/submadd max min (*rnd*) min)))
 
   #+clj  (defn randnorm
-           [] (dec (* (.nextDouble *rnd*) 2.0)))
+           [] (dec (* (.nextDouble ^java.util.Random *rnd*) 2.0)))
   #+cljs (defn randnorm
            [] (dec (* (*rnd*) 2.0)))
 #+END_SRC
