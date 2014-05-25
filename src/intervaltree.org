@@ -1,0 +1,86 @@
+#+SETUPFILE: setup.org
+
+* Namespace: thi.ng.common.data.intervaltree
+
+This namespace contains an implementation of centered interval trees
+based on the related [[http://en.wikipedia.org/wiki/Interval_tree#Centered_interval_tree][Wikipedia article]]. The first implementation is
+using mutable fields and is *not* thread safe.
+
+The tree maps intervals to values and can be queried for a given point
+(number), for which it returns values of all matching intervals.
+During querying, the intervals can be interpreted as closed,
+half-open or open via the supplied =interval-fn= function or by using
+one of the four presets: =closed=, =<open=, =open>= or =open=.
+
+Furthermore multiple values can be mapped to the same interval, but
+adding values is idempotent (provided a value is always associated
+with the same interval).
+
+#+BEGIN_SRC clojure :noweb-ref impl
+  (defprotocol PIntervalTree
+    (add-interval [_ i x])
+    (query-point [_ x ifn acc]))
+  
+  (deftype IntervalNode
+      [median
+       ^:unsynchronized-mutable left
+       ^:unsynchronized-mutable right
+       ^:unsynchronized-mutable center]
+    PIntervalTree
+    (add-interval [_ [il ih :as i] val]
+      (cond
+       (< ih median)
+       (if left
+         (add-interval left i val)
+         (set! left (IntervalNode. (* (+ il ih) 0.5) nil nil {i #{val}})))
+  
+       (> il median)
+       (if right
+         (add-interval right i val)
+         (set! right (IntervalNode. (* (+ il ih) 0.5) nil nil {i #{val}})))
+  
+       :else (set! center (update-in center [i] (fnil conj #{}) val)))
+      _)
+    (query-point
+      [_ x ifn acc]
+      (let [acc (if (== x median)
+                  (into acc (mapcat val center))
+                  (->> center (filter (ifn x)) (mapcat val) (into acc)))
+            acc (if (and left (< x median))
+                  (query-point left x ifn acc)
+                  acc)
+            acc (if (and right (> x median))
+                  (query-point right x ifn acc)
+                  acc)]
+        acc))
+    Object
+    (toString
+      [_]
+      (str ":median " median
+           ", :left " (pr-str left)
+           ", :right " (pr-str right)
+           ", :center " (pr-str center))))
+  
+  (defn interval-fn
+    [min-incl? max-incl?]
+    (let [f1 (if min-incl? >= >)
+          f2 (if max-incl? <= <)]
+      (fn [x]
+        (fn [kv] (let [k (first kv)] (and (f1 x (k 0)) (f2 x (k 1))))))))
+  
+  (def closed (interval-fn true true))
+  (def open (interval-fn false false))
+  (def <open (interval-fn false true))
+  (def open> (interval-fn true false))
+  
+  (defn interval-tree
+    [x]
+    (IntervalNode. x nil nil {}))
+#+END_SRC
+
+** Complete namespace definition                                   :noexport:
+#+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/intervaltree.cljx :noweb yes :mkdirp yes :padline no
+  (ns thi.ng.common.data.intervaltree)
+
+  <<impl>>
+#+END_SRC
