@@ -29,7 +29,7 @@
   (def ^:const DEG (/ 180.0 PI))
   (def ^:const RAD (/ PI 180.0))
 #+END_SRC
-*** Dynamic \epsilon (epsilon) config
+*** Dynamic \epsilon config
 #+BEGIN_SRC clojure :noweb-ref const
   (def ^:dynamic *eps* 1e-6)
 #+END_SRC
@@ -39,6 +39,64 @@
 #+END_SRC
 ** Functions
 *** Basics
+
+**** Absolute value & difference
+#+BEGIN_SRC clojure :noweb-ref math
+  ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
+  ,#+cljs (def abs Math/abs)
+  
+  (defn abs-diff
+    [x y] (abs (- x y)))
+
+#+END_SRC 
+
+**** Equality check with \epsilon value
+#+BEGIN_SRC clojure :noweb-ref tpl-delta-eq
+  (delta= ([a b] (and (number? b) (<= (abs (- a b)) *eps*))) ([a b eps] (and (number? b) (<= (abs (- a b)) eps))))
+#+END_SRC
+
+#+BEGIN_SRC clojure :noweb-ref tpl-delta-eq-seq
+  (delta=
+   ([a b]
+    (and (sequential? b) (== (count a) (count b)) (every? true? (map #(delta= % %2 *eps*) a b))))
+   ([a b eps]
+    (and (sequential? b) (== (count a) (count b)) (every? true? (map #(delta= % %2 eps) a b)))))
+#+END_SRC
+
+#+BEGIN_SRC clojure :noweb-ref math
+  (defprotocol PDeltaEquals
+    (delta= [a b] [a b eps]))
+  
+  (extend-protocol PDeltaEquals
+    ,#+clj  Integer
+    ,#+clj  <<tpl-delta-eq>>
+    ,#+clj  Long
+    ,#+clj  <<tpl-delta-eq>>
+    ,#+clj  Float
+    ,#+clj  <<tpl-delta-eq>>
+    ,#+clj  Double
+    ,#+cljs js/Number
+    <<tpl-delta-eq>>
+  
+    ,#+clj  clojure.lang.PersistentVector
+    ,#+cljs PersistentVector
+    <<tpl-delta-eq-seq>>
+    ,#+clj  clojure.lang.PersistentList
+    ,#+cljs List
+    <<tpl-delta-eq-seq>>
+    ,#+clj  clojure.lang.LazySeq
+    ,#+cljs LazySeq
+    <<tpl-delta-eq-seq>>
+    ,#+clj  clojure.lang.PersistentVector$ChunkedSeq
+    ,#+cljs IndexedSeq
+    <<tpl-delta-eq-seq>>
+
+    nil
+    (delta= ([_ b] (nil? b)) ([_ b _] (nil? b)))
+    )
+
+#+END_SRC
+
 #+BEGIN_SRC clojure :noweb-ref math
   (defn ensure-even
     "Returns x if even or `x+1` if `x` is odd."
@@ -47,26 +105,6 @@
   (defn ensure-odd
     "Returns x if odd or `x+1` if `x` is even."
     [x] (if (even? x) (inc x) x))
-  
-  ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
-  ,#+cljs (def abs Math/abs)
-  
-  (defn abs-diff
-    [x y] (abs (- x y)))
-  
-  (defn delta=
-    "Takes two numbers or seqs of numbers and returns true if their
-    absolute difference is less than `delta` (`*eps` used by default).
-    If either `a` or `b` are nil, returns only true if the other is nil
-    as well."
-    ([a b] (delta= a b *eps*))
-    ([a b delta]
-       (if (and a b)
-         (if (number? a)
-           (if (number? b) (<= (abs (- b a)) delta) false)
-           (and (= (count a) (count b))
-                (every? true? (map #(<= (abs (- % %2)) delta) a b))))
-         (= a b))))
   
   (defn signum
     ([x] (if (neg? x) -1 (if (zero? x) 0 1)))
