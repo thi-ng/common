@@ -39,7 +39,6 @@
 #+END_SRC
 ** Functions
 *** Basics
-
 **** Absolute value & difference
 #+BEGIN_SRC clojure :noweb-ref math
   ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
@@ -75,7 +74,7 @@
     ,#+clj  Float
     ,#+clj  <<tpl-delta-eq>>
     ,#+clj  Double
-    ,#+cljs js/Number
+    ,#+cljs number
     <<tpl-delta-eq>>
   
     ,#+clj  clojure.lang.PersistentVector
@@ -315,7 +314,6 @@
              s (/ scale (reduce + ws))]
          (map #(* s %) ws))))
 #+END_SRC
-
 
 ** Complete namespace definition                                   :noexport:
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/math/core.cljx :noweb yes :mkdirp yes :padline no
