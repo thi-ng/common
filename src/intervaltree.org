@@ -24,13 +24,13 @@ with the same interval).
   
   (defn sort-min
     [a b]
-    (let [c (- (nth a 0) (nth b 0))]
-      (if (zero? c) (- (nth a 1) (nth b 1)) c)))
+    (let [c (compare (nth a 0) (nth b 0))]
+      (if (zero? c) (compare a b) c)))
   
   (defn sort-max
     [a b]
-    (let [c (- (nth b 1) (nth a 1))]
-      (if (zero? c) (- (nth b 0) (nth a 0)) c)))
+    (let [c (compare (nth b 1) (nth a 1))]
+      (if (zero? c) (compare b a) c)))
   
   (deftype IntervalNode
       [median
