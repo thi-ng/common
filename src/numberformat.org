@@ -1,0 +1,39 @@
+#+SETUPFILE: setup.org
+
+* Namespace: thi.ng.common.numberformat
+
+** Number formatters
+#+BEGIN_SRC clojure :noweb-ref formatters
+  (def float
+    (memoize
+     (fn [prec]
+       ,#+clj  (let [fmt (str "%1." prec "f")]
+                (fn [x] (clojure.core/format fmt (double x))))
+       ,#+cljs (fn [x] (.toFixed (js/Number. x) prec)))))
+  
+  (def left-pad
+    (memoize
+     (fn [len fill f]
+       (let [fill (apply str (repeat len fill))]
+         (fn [x]
+           (let [x (if (string? x) x (f x))
+                 l (count x)]
+             (if (< l len) (str (subs fill 0 (- len l)) x) x)))))))
+  
+  (defn format
+    [fmt & args]
+    (loop [s [] fmt fmt args args]
+      (if-let [f (first fmt)]
+        (if (string? f)
+          (recur (conj s f) (next fmt) args)
+          (recur (conj s (f (first args))) (next fmt) (next args)))
+        (apply str s))))
+#+END_SRC
+
+** Complete namespace definition                                   :noexport:
+#+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/numberformat.cljx :noweb yes :mkdirp yes :padline no
+  (ns thi.ng.common.numberformat
+    (:refer-clojure :exclude [float format]))
+
+  <<formatters>>
+#+END_SRC
