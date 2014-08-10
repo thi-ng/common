@@ -96,7 +96,7 @@ project is via command line (make sure =emacs= is on your path or else
 edit its path in =tangle.sh=):
 
 #+BEGIN_SRC bash
-  git clone https://github.com/thi.ng/common.git
+  git clone https://github.com/thi-ng/common.git
   cd common
   ./tangle.sh src/*.org test/*.org
 #+END_SRC
@@ -134,22 +134,24 @@ REPL via =(require 'thi.ng.common... :reload)= or similar.
 
 #+BEGIN_SRC clojure :tangle ../babel/project.clj :noweb yes :mkdirp yes :padline no
   (defproject thi.ng/common "<<version>>"
-    :description "Shared utility belt for thi.ng projects"
-    :url "<<project-url>>"
-    :license {:name "Apache Software License 2.0"
-              :url "http://www.apache.org/licenses/LICENSE-2.0"}
+    :description  "Shared utility belt for thi.ng projects"
+    :url          "<<project-url>>"
+    :license      {:name "Apache Software License 2.0"
+                   :url "http://www.apache.org/licenses/LICENSE-2.0"}
+    :scm          {:name "git"
+                   :url  "https://github.com/thi-ng/common"}
     :dependencies [<<dep-clj>>
                    <<dep-mmath>>]
 
     :source-paths ["src/cljx"]
-    :test-paths ["<<gen-test-path>>"]
+    :test-paths   ["<<gen-test-path>>"]
 
     :profiles {:dev {:dependencies [<<dep-cljs>>
                                     <<dep-criterium>>]
-                     :plugins [<<dep-cljx>>
-                               <<dep-cljsbuild>>
-                               <<dep-cljs-test>>
-                               <<dep-austin>>]
+                     :plugins      [<<dep-cljx>>
+                                    <<dep-cljsbuild>>
+                                    <<dep-cljs-test>>
+                                    <<dep-austin>>]
                      :hooks [cljx.hooks]
                      :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]}}}
 
