@@ -49,7 +49,7 @@
 
 #+END_SRC 
 
-**** Equality check with \epsilon value
+**** Piecewise and recursive equality check with \epsilon value
 #+BEGIN_SRC clojure :noweb-ref tpl-delta-eq
   (delta= ([a b] (and (number? b) (<= (abs (- a b)) *eps*))) ([a b eps] (and (number? b) (<= (abs (- a b)) eps))))
 #+END_SRC
@@ -57,9 +57,23 @@
 #+BEGIN_SRC clojure :noweb-ref tpl-delta-eq-seq
   (delta=
    ([a b]
-    (and (sequential? b) (== (count a) (count b)) (every? true? (map #(delta= % %2 *eps*) a b))))
+      (and (sequential? b)
+           (== (count a) (count b))
+           (loop [a a, b b]
+             (if a
+               (if (delta= (first a) (first b))
+                 (recur (next a) (next b))
+                 false)
+               true))))
    ([a b eps]
-    (and (sequential? b) (== (count a) (count b)) (every? true? (map #(delta= % %2 eps) a b)))))
+      (and (sequential? b)
+           (== (count a) (count b))
+           (loop [a a, b b]
+             (if a
+               (if (delta= (first a) (first b) eps)
+                 (recur (next a) (next b))
+                 false)
+               true)))))
 #+END_SRC
 
 #+BEGIN_SRC clojure :noweb-ref math
