@@ -73,7 +73,7 @@
      (fn [len]
        ,#+cljs
        (let [pad (pad-left len "0")]
-         (fn [x] (pad (.toString (js/Number. (bit-or x)) 16))))
+         (fn [x] (pad (.toString (js/Number. (bit-or x 0)) 16))))
        ,#+clj
        (let [fmt (str "%0" len "x")]
          (fn [x] (clojure.core/format fmt (long x)))))))
