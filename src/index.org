@@ -45,7 +45,7 @@ target/common-<<version>>.js
 #+END_SRC
 **** [[https://github.com/thi-ng/macromath][Macromath]]
 #+BEGIN_SRC clojure :noweb-ref dep-mmath
-[thi.ng/macromath "0.2.1"]
+[thi.ng/macromath "0.2.3"]
 #+END_SRC
 *** Development
 **** [[https://github.com/cemerick/austin][Austin]]
