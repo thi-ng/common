@@ -2,6 +2,47 @@
 
 * Namespace: thi.ng.common.stringformat
 
+** Number parsers
+
+#+BEGIN_SRC clojure :noweb-ref parsers
+  ,#+clj
+  (defn parse-int
+    [^String x radix & [default]]
+    (try (Integer/parseInt x radix) (catch Exception e default)))
+
+  ,#+clj
+  (defn parse-long
+    [^String x radix & [default]]
+    (try (Long/parseLong x radix) (catch Exception e default)))
+
+  ,#+clj
+  (defn parse-float
+    [^String x & [default]]
+    (try (Float/parseFloat x) (catch Exception e default)))
+
+  ,#+clj
+  (defn parse-double
+    [^String x & [default]]
+    (try (Double/parseDouble x) (catch Exception e default)))
+
+  ,#+clj
+  (defn parse-boolean
+    [^String x] (Boolean/parseBoolean x))
+
+  ,#+cljs
+  (defn parse-int
+    ([x] (parse-int x 10))
+    ([x radix & [default]]
+       (let [x' (js/parseInt x radix)]
+         (if (js/isNaN x') default x'))))
+
+  ,#+cljs
+  (defn parse-float
+    [x & [default]]
+    (let [x' (js/parseFloat x)]
+      (if (js/isNaN x') default x')))
+#+END_SRC
+
 ** Number formatters
 #+BEGIN_SRC clojure :noweb-ref formatters
   (def float
@@ -27,13 +68,23 @@
            (let [l (count x)]
              (if (< l len) (str x (subs fill 0 (- len l))) x)))))))
 
-  (defn trim-left
+  (def hex
+    (memoize
+     (fn [len]
+       ,#+cljs
+       (let [pad (pad-left len "0")]
+         (fn [x] (pad (.toString (js/Number. (bit-or x)) 16))))
+       ,#+clj
+       (let [fmt (str "%0" len "x")]
+         (fn [x] (clojure.core/format fmt (long x)))))))
+         
+  (defn trunc-left
     [len]
     (fn [x]
       (let [l (count x)]
         (if (<= l len) x (subs x 0 len)))))
 
-  (defn trim-right
+  (defn trunc-right
     [len]
     (fn [x]
       (let [l (count x)]
@@ -44,7 +95,7 @@
       {:yyyy-mm-dd [str "-" d2 "-" d2]
        :yyyy-mm-dd-hh-mm-ss [str "-" d2 "-" d2 " " d2 ":" d2 ":" d2]
        :dd-mm-yyyy [d2 "/" d2 "/" str]
-       :dd-mm-yy   [d2 "/" d2 "/" (comp (trim-right 2) str)]}))
+       :dd-mm-yy   [d2 "/" d2 "/" (comp (trunc-right 2) str)]}))
 
   ,#+clj
   (defn format
@@ -71,6 +122,8 @@
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/stringformat.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.stringformat
     (:refer-clojure :exclude [float format]))
+
+  <<parsers>>
 
   <<formatters>>
 #+END_SRC
