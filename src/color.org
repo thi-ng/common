@@ -75,6 +75,12 @@
             (str "rgba(" (int r) "," (int g) "," (int b) "," (max 0.0 a) ")"))
           (f/format fmt (rgba->int r g b))))))
 
+  (defn hsba->css
+    [h s b & [a]]
+    (if a
+      (apply rgba->css (conj (hsb->rgb h s b) a))
+      (apply rgba->css (hsb->rgb h s b))))
+
   (defn hex->rgb
     [hex]
     (let [hex (if (= \# (first hex)) (subs hex 1) hex)
