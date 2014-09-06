@@ -2,9 +2,13 @@
 
 * Namespace: thi.ng.common.color
 
+** Constants
+
 #+BEGIN_SRC clojure :noweb-ref const
   (def ^:const INV8BIT (/ 1.0 255))
 #+END_SRC
+
+** Color space conversion
 
 #+BEGIN_SRC clojure :noweb-ref conversion
   (defn rgb->hsb
@@ -90,8 +94,47 @@
        (* INV8BIT (bit-and rgb 255))]))
 #+END_SRC
 
+** Color components
+
+#+BEGIN_SRC clojure :noweb-ref components
+  (def hues
+    (zipmap
+     [:red :orange :yellow :lime :green :teal :cyan :azure :blue :indigo :purple :magenta]
+     (map #(/ % 360.0) (range 0 360 30))))
+
+  (def primary-hues
+    (select-keys hues [:red :yellow :green :cyan :blue :magenta]))
+
+  (defn closest-hue
+    ([h] (closest-hue h hues))
+    ([h hues]
+       (first
+        (reduce
+         (fn [[h' d'] [k v]]
+           (let [d (min (m/abs-diff h v) (m/abs-diff (inc h) v))]
+             (if (< d d') [k d] [h' d'])))
+         [nil 1e6] hues))))
+
+  (defn hue-rgb
+    [rgb] (first (apply rgb->hsb rgb)))
+
+  (defn saturation-rgb
+    [[r g b]]
+    (let [v (max r g b)
+          d (- v (min r g b))]
+      (if (zero? v) 0.0 (/ d v))))
+
+  (defn brightness-rgb
+    [[r g b]] (max r g b))
+
+  (defn luminance-rgb
+    [[r g b]] (mm/madd 0.299 r 0.587 g 0.114 b))
+#+END_SRC
+
+** Color operations
+
 #+BEGIN_SRC clojure :noweb-ref ops
-  (defn rotate-hue
+  (defn rotate-hue-hsb
     "Returns new HSB color with its hue rotated by theta (in radians)."
     [[h s b] theta]
     (let [h (+ h (/ (rem theta TWO_PI) TWO_PI))]
@@ -100,6 +143,43 @@
   (defn complementary-hsb
     "Returns new HSB color with its hue rotated by 180 degrees."
     [hsb] (rotate-hue hsb PI))
+
+  (defn complementary-rgb
+    [rgb] (apply hsb->rgb (rotate-hue (apply rgb->hsb rgb) PI)))
+#+END_SRC
+
+*** Blending
+
+#+BEGIN_SRC clojure :noweb-ref ops
+  (defn blend-rgb
+    [rgb1 rgb2 t]
+    [(mm/mix (nth rgb1 0) (nth rgb2 0) t)
+     (mm/mix (nth rgb1 1) (nth rgb2 1) t)
+     (mm/mix (nth rgb1 2) (nth rgb2 2) t)])
+
+  (defn blend-hsb
+    [hsb1 hsb2 t]
+    [(let [h1 (nth hsb1 0) h2 (nth hsb2 0)
+           hd (m/abs-diff h1 h2)]
+       (if (> hd 0.5)
+         (if (> h2 h1)
+           (rem (mm/mix (inc h1) h2 t) 1.0)
+           (rem (mm/mix h1 (inc h2) t) 1.0))
+         (mm/mix h1 h2 t)))
+     (mm/mix (nth hsb1 1) (nth hsb2 1) t)
+     (mm/mix (nth hsb1 2) (nth hsb2 2) t)])
+
+  (defn blend-rgba
+    [[dr dg db da] [sr sg sb sa]]
+    (let [sa (or sa 1.0)
+          da (or da 1.0)
+          da' (mm/subm 1.0 sa da)
+          a'  (+ sa da')
+          ia' (/ 1.0 a')]
+      [(* ia' (mm/madd sr sa dr da'))
+       (* ia' (mm/madd sg sa dg da'))
+       (* ia' (mm/madd sb sa db da'))
+       a']))
 #+END_SRC
 
 ** Complete namespace definition                                   :noexport:
@@ -116,6 +196,8 @@
   <<const>>
 
   <<conversion>>
+
+  <<components>>
 
   <<ops>>
 #+END_SRC
