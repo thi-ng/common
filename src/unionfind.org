@@ -10,7 +10,7 @@
     (canonical [_ p])
     (disjoint-components [_])
     (component-for [_ p])
-    (union [_ [p q]] [_ p q])
+    (union [_ p q])
     (unified? [_ p q]))
 #+END_SRC
 
@@ -18,51 +18,50 @@
 
 #+BEGIN_SRC clojure :noweb-ref disj-set
   (defprotocol PUnionFind
-    (add-single [_ p])
+    (register [_ p])
     (canonical [_ p])
     (disjoint-components [_])
-    (component-for [_ p])
+    (component [_ p])
     (union [_ [p q]] [_ p q])
     (unified? [_ p q]))
 
   (deftype DisjointSet [index components]
     PUnionFind
     (canonical [_ p]
-      (or (index p) (when (components p) p)))
+      (if (components p) p (index p)))
     (unified? [_ p q]
       (= (index p p) (index q q)))
-    (component-for [_ p]
+    (component [_ p]
       (components (canonical _ p)))
     (disjoint-components [_]
       (vals components))
-    (add-single
+    (register
       [_ p]
-      (if (canonical _ p)
-        _
-        (DisjointSet. (assoc index p p) (assoc components p [p]))))
-    (union [_ [p q]]
-      (union _ p q))
+      (if (canonical _ p) _
+          (DisjointSet. (assoc index p p) (assoc components p [p]))))
     (union [_ p q]
-      (let [canon1 (index p p)
-            canon2 (index q q)]
-        (if (= canon1 canon2)
-          _
-          (let [comp1 (or (components canon1) [canon1])
-                comp2 (or (components canon2) [canon2])
-                [canon1 canon2 comp1 comp2] (if (<= (count comp1) (count comp2))
-                                              [canon1 canon2 comp1 comp2]
-                                              [canon2 canon1 comp2 comp1])]
-            (DisjointSet.
-             (into index (for [item comp1] [item canon2]))
-             (-> components
-                 (dissoc canon1)
-                 (assoc canon2 (into comp2 comp1))))))))
+      (let [canonp (index p p)
+            canonq (index q q)]
+        (if (= canonp canonq) _
+            (let [compp (or (components canonp) [canonp])
+                  compq (or (components canonq) [canonq])
+                  [canonp canonq compp compq] (if (<= (count compp) (count compq))
+                                                [canonp canonq compp compq]
+                                                [canonq canonp compq compp])]
+              (DisjointSet.
+               (loop [idx (transient index), i compp]
+                 (if i
+                   (recur (conj! idx [(first i) canonq]) (next i))
+                   (persistent! idx)))
+               (-> components
+                   (dissoc canonp)
+                   (assoc canonq (into compq compp))))))))
     Object
     (toString [_] (pr-str {:index index :components components})))
 
   (defn disjoint-set
     ([] (DisjointSet. {} {}))
-    ([xs] (reduce union (DisjointSet. {} {}) xs)))
+    ([xs] (reduce (partial apply union) (DisjointSet. {} {}) xs)))
 #+END_SRC
 
 ** Complete namespace definition                                   :noexport:
