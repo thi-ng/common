@@ -29,7 +29,7 @@
     [h s b]
     (if (m/delta= 0.0 s)
       [b b b]
-      (let [h (* h 6.0)
+      (let [h (rem (* h 6.0) 6.0)
             i (int h)
             f (- h i)
             p (* b (- 1.0 s))
@@ -171,10 +171,10 @@
 #+BEGIN_SRC clojure :noweb-ref ops
   (defn complementary-hsb
     "Returns new HSB color with its hue rotated by 180 degrees."
-    [hsb] (rotate-hue hsb PI))
+    [hsb] (rotate-hue-hsb hsb PI))
 
   (defn complementary-rgb
-    [rgb] (apply hsb->rgb (rotate-hue (apply rgb->hsb rgb) PI)))
+    [rgb] (rotate-hue-rgb rgb PI))
 
   (defn invert-rgb
     [[r g b]] [(- 1.0 r) (- 1.0 g) (- 1.0 b)])
