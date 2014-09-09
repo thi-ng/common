@@ -41,7 +41,7 @@ target/common-<<version>>.js
 #+END_SRC
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
-[org.clojure/clojurescript "0.0-2280"]
+[org.clojure/clojurescript "0.0-2322"]
 #+END_SRC
 **** [[https://github.com/thi-ng/macromath][Macromath]]
 #+BEGIN_SRC clojure :noweb-ref dep-mmath
