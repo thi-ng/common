@@ -83,7 +83,7 @@
      :baby-blue-white 0x6ca0dc
      :baker-miller-pink 0xff91af
      :beige 0xf5f5dc
-     :beige-1 0xc8ad7f
+     :beige-2 0xc8ad7f
      :beige-buff 0xf0dc82
      :beige-cosmic-latte 0xfff8e7
      :beige-cream 0xfffdd0
@@ -289,9 +289,6 @@
      :crimson-white 0xe3256b
      :crimson-white-2 0xc41e3a
      :cyan 0x00ffff
-     :cyan 0x00ffff
-     :cyan-additive-secondary 0x00ffff
-     :cyan-additive-secondary 0x00ffff
      :cyan-aero-blue 0xc9ffe5
      :cyan-celeste 0xb2ffff
      :cyan-cerulean 0x007ba7
@@ -301,8 +298,6 @@
      :cyan-light-sea-green 0x20b2aa
      :cyan-midnight-green 0x004953
      :cyan-robin-egg-blue 0x00cccc
-     :cyan-subtractive-primary 0x00b7eb
-     :cyan-subtractive-primary 0x00b7eb
      :cyan-teal 0x008080
      :cyan-turquoise 0x40e0d0
      :cyan-white 0x0d98ba
@@ -520,7 +515,7 @@
      :lemon-lemon-yellow 0xfff44f
      :lemon-white 0xcca01d
      :lilac 0xdcd0ff
-     :lilac-lilac-crayola 0xd891ef
+     :lilac-crayola 0xd891ef
      :lilac-white 0xb666d2
      :lilac-white-2 0x86608e
      :lime 0xbfff00
@@ -538,12 +533,10 @@
      :liver-organ 0x6c2e1f
      :magenta 0xff00ff
      :magenta-black 0xff0090
-     :magenta-black-2 0xff00ff
-     :magenta-black-2 0xff00ff
-     :magenta-black-3 0xf653a6
-     :magenta-black-4 0xff6fff
-     :magenta-black-5 0xff1dce
-     :magenta-black-6 0xfe4eda
+     :magenta-black-2 0xf653a6
+     :magenta-black-3 0xff6fff
+     :magenta-black-4 0xff1dce
+     :magenta-black-5 0xfe4eda
      :magenta-maranth-purple 0xab274f
      :magenta-orchid 0xda70d6
      :magenta-plum 0x8e4585
@@ -924,7 +917,6 @@
      :turquoise-pearl-mystic 0x32c6a6
      :turquoise-turquoise-blue 0x00ffef
      :tuscan-red 0x7c3030
-     :tuscan-red 0xfad6a5
      :tuscan-red-brown 0x6f4e37
      :tuscan-red-iscc-nbs 0x79443b
      :tuscan-red-tan 0xa67b5b
