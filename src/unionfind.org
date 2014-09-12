@@ -19,6 +19,7 @@
 #+BEGIN_SRC clojure :noweb-ref disj-set
   (defprotocol PUnionFind
     (register [_ p])
+    (unregister [_ p])
     (canonical [_ p])
     (disjoint-components [_])
     (component [_ p])
@@ -39,12 +40,24 @@
       [_ p]
       (if (canonical _ p) _
           (DisjointSet. (assoc index p p) (assoc components p [p]))))
+    (unregister [_ p]
+      (if (canonical _ p)
+        (if-let [comp (components p)]
+          (let [comp (disj comp p)]
+            (if-let [q (first comp)]
+              (do (prn p q comp)
+                  (DisjointSet.
+                   (reduce #(assoc % %2 q) (dissoc index p q) (disj comp q))
+                   (-> components (dissoc p) (assoc q comp))))
+              (DisjointSet. (dissoc index p) (dissoc components p))))
+          (DisjointSet. (dissoc index p) (update-in components [(index p)] disj p)))
+        _))
     (union [_ p q]
       (let [canonp (index p p)
             canonq (index q q)]
         (if (= canonp canonq) _
-            (let [compp (or (components canonp) [canonp])
-                  compq (or (components canonq) [canonq])
+            (let [compp (or (components canonp) #{canonp})
+                  compq (or (components canonq) #{canonq})
                   [canonp canonq compp compq] (if (<= (count compp) (count compq))
                                                 [canonp canonq compp compq]
                                                 [canonq canonp compq compp])]
