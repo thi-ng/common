@@ -67,38 +67,40 @@
       (rseq (vec (.seq _))))
 
     Object
-    (toString [this] (str (.seq heap))))
+    (toString [_] (str heap)))
 #+END_SRC
 
 ** Heap operations
 
 #+BEGIN_SRC clojure :noweb-ref ops
   (defn- percolate+
-    [heap compare k]
+    [heap compare ^long k]
     (let [v (heap k)]
-      (loop [heap heap, k k]
+      (loop [heap (transient heap), k k]
         (if (> k 0)
           (let [parent-idx (bit-shift-right (dec k) 1)
                 parent     (heap parent-idx)]
             (if (> (compare parent v) 0)
-              (recur (assoc heap k parent) parent-idx)
-              (assoc heap k v)))
-          (assoc heap k v)))))
+              (recur (assoc! heap k parent) parent-idx)
+              (persistent! (assoc! heap k v))))
+          (persistent! (assoc! heap k v))))))
 
   (defn- percolate-
-    [heap n compare k]
+    [heap n compare ^long k]
     (let [n2 (bit-shift-right n 1)
           v (heap k)]
-      (loop [heap heap, k k]
+      (loop [heap (transient heap), k k]
         (if (< k n2)
           (let [left  (inc (bit-shift-left k 1))
                 right (inc left)
-                child (if (and (< right n) (< (compare (heap right) (heap left)) 0)) right left)
+                child (if (< right n)
+                        (if (< (compare (heap right) (heap left)) 0) right left)
+                        left)
                 cval  (heap child)]
             (if (> (compare cval v) 0)
-              (assoc heap k v)
-              (recur (assoc heap k cval) child)))
-          (assoc heap k v)))))
+              (persistent! (assoc! heap k v))
+              (recur (assoc! heap k cval) child)))
+          (persistent! (assoc! heap k v))))))
 
   (defn- rebalance
     [heap compare]
