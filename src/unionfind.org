@@ -6,30 +6,24 @@
 
 #+BEGIN_SRC clojure :noweb-ref protos
   (defprotocol PUnionFind
-    (add-single [_ p])
+    (register [_ p])
+    (unregister [_ p])
     (canonical [_ p])
+    (canonical? [_ p])
     (disjoint-components [_])
-    (component-for [_ p])
-    (union [_ p q])
+    (component [_ p])
+    (union [_ [p q]] [_ p q])
     (unified? [_ p q]))
 #+END_SRC
 
 ** Disjoint Set
 
 #+BEGIN_SRC clojure :noweb-ref disj-set
-  (defprotocol PUnionFind
-    (register [_ p])
-    (unregister [_ p])
-    (canonical [_ p])
-    (disjoint-components [_])
-    (component [_ p])
-    (union [_ [p q]] [_ p q])
-    (unified? [_ p q]))
-
   (deftype DisjointSet [index components]
     PUnionFind
     (canonical [_ p]
       (if (components p) p (index p)))
+    (canonical? [_ p] (components p))
     (unified? [_ p q]
       (= (index p p) (index q q)))
     (component [_ p]
@@ -45,10 +39,9 @@
         (if-let [comp (components p)]
           (let [comp (disj comp p)]
             (if-let [q (first comp)]
-              (do (prn p q comp)
-                  (DisjointSet.
-                   (reduce #(assoc % %2 q) (dissoc index p q) (disj comp q))
-                   (-> components (dissoc p) (assoc q comp))))
+              (DisjointSet.
+               (reduce #(assoc % %2 q) (dissoc index p q) (disj comp q))
+               (-> components (dissoc p) (assoc q comp)))
               (DisjointSet. (dissoc index p) (dissoc components p))))
           (DisjointSet. (dissoc index p) (update-in components [(index p)] disj p)))
         _))
