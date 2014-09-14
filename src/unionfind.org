@@ -10,6 +10,7 @@
     (unregister [_ p])
     (canonical [_ p])
     (canonical? [_ p])
+    (set-canonical [_ p q])
     (disjoint-components [_])
     (component [_ p])
     (union [_ [p q]] [_ p q])
@@ -24,6 +25,15 @@
     (canonical [_ p]
       (if (components p) p (index p)))
     (canonical? [_ p] (components p))
+    (set-canonical
+     [_ p q]
+     (let [canon (canonical _ p)
+           comp (components canon)]
+       (if (comp q)
+         (DisjointSet.
+           (reduce (fn [i k] (assoc i k q)) (dissoc index q) (disj comp q))
+           (-> components (dissoc canon) (assoc q comp)))
+         (err/illegal-arg! (str p " not unified with " q)))))
     (unified? [_ p q]
       (= (index p p) (index q q)))
     (component [_ p]
@@ -72,7 +82,9 @@
 
 ** Complete namespace definition                                   :noexport:
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/unionfind.cljx :noweb yes :mkdirp yes :padline no
-  (ns thi.ng.common.data.unionfind)
+  (ns thi.ng.common.data.unionfind
+    (:require
+     [thi.ng.common.error :as err]))
 
   <<protos>>
 
