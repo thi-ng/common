@@ -28,10 +28,10 @@
     (set-canonical
      [_ p q]
      (let [canon (canonical _ p)
-           comp (components canon)]
+           comp  (components canon)]
        (if (comp q)
          (DisjointSet.
-           (reduce (fn [i k] (assoc i k q)) (dissoc index q) (disj comp q))
+           (reduce #(assoc %1 %2 q) (dissoc index q) (disj comp q))
            (-> components (dissoc canon) (assoc q comp)))
          (err/illegal-arg! (str p " not unified with " q)))))
     (unified? [_ p q]
