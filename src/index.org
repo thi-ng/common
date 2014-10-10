@@ -211,7 +211,7 @@ symbol =version= holding the version string defined above:
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/version.cljx :noweb yes :mkdirp yes :padline no :exports none
   (ns thi.ng.common.version)
 
-  (def ^:const version "<<version>>")
+  (def version "<<version>>")
 #+END_SRC
 
 * Modules
