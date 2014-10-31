@@ -176,12 +176,20 @@
       (into (subvec xs n) (subvec xs 0 n))
       (concat (drop n xs) (take n xs))))
 
+  (defn index-of
+    [coll item]
+    (loop [i 0, coll coll]
+      (if coll
+        (if (= item (first coll))
+          i (recur (inc i) (next coll)))
+        -1)))
+
   (defn all-after
     "Returns a new collection of all items after `item` in original `coll`.
     If `coll` is a vector, the new collection is created with `subvec`.
     Returns original coll if item isn't found."
     [item coll]
-    (let [idx (inc (.indexOf coll item))]
+    (let [idx (inc (index-of coll item))]
       (if (pos? idx)
         (if (vector? coll) (subvec coll idx) (drop idx coll))
         coll)))
