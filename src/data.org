@@ -199,6 +199,9 @@
     (lazy-seq
      (when (pred x)
        (cons x (iterate-while pred f (f x))))))
+
+  (defn iterate-n
+    [n f x] (->> x (iterate f) (take n) (last)))
 #+END_SRC
 ** String functions
 #+BEGIN_SRC clojure :noweb-ref strings
