@@ -1,15 +1,26 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommondatabyteutils][Namespace: thi.ng.common.data.byteutils]]
+     - [[#todo-refactor-to-be-cljs-compatible][TODO refactor to be CLJS compatible]]
+     - [[#conversion-functions][Conversion functions]]
+     - [[#read-functions][Read functions]]
+     - [[#write-functions][Write functions]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.data.byteutils
+
 ** TODO refactor to be CLJS compatible
 
 ** Conversion functions
+
 #+BEGIN_SRC clojure :noweb-ref helpers
   #+clj (defn int->byte [x] (if (> x 0x7f) (- x 0x100) x))
   #+clj (defn byte->int [x] (if (neg? x) (+ x 0x100) x))
 #+END_SRC
 
 ** Read functions
+
 #+BEGIN_SRC clojure :noweb-ref read
   ,#+clj
   (defn read-int16-le
@@ -53,6 +64,7 @@
 #+END_SRC
 
 ** Write functions
+
 #+BEGIN_SRC clojure :noweb-ref write
   ,#+clj
   (defn write-str-bytes
@@ -110,7 +122,8 @@
     [out [x y z]])
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/byteutils.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.data.byteutils
     #+clj

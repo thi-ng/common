@@ -1,5 +1,12 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommonmathsimplexnoise][Namespace: thi.ng.common.math.simplexnoise]]
+     - [[#noise-generators][Noise generators]]
+     - [[#constants--lookup-tables][Constants & lookup tables]]
+     - [[#helper-functions][Helper functions]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.math.simplexnoise
 
 ** Noise generators
@@ -111,7 +118,8 @@
       (mm/madd x (G idx) y (G (inc idx)) z (G (+ idx 2)))))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/math/simplexnoise.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.math.simplexnoise
     ,#+cljs (:require-macros [thi.ng.macromath.core :as mm])

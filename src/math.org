@@ -1,8 +1,29 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommonmathcore][Namespace: thi.ng.common.math.core]]
+     - [[#constants][Constants]]
+         - [[#dynamic-\epsilon-config][Dynamic \epsilon config]]
+         - [[#dynamic-prng][Dynamic PRNG]]
+     - [[#functions][Functions]]
+         - [[#basics][Basics]]
+             - [[#absolute-value--difference][Absolute value & difference]]
+             - [[#piecewise-and-recursive-equality-check-with-\epsilon-value][Piecewise and recursive equality check with \epsilon value]]
+         - [[#intervals][Intervals]]
+         - [[#interpolation][Interpolation]]
+         - [[#rounding][Rounding]]
+         - [[#trigonometry][Trigonometry]]
+         - [[#advanced][Advanced]]
+         - [[#randomness][Randomness]]
+         - [[#statistics][Statistics]]
+             - [[#percentiles][Percentiles]]
+             - [[#distributions][Distributions]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.math.core
 
 ** Constants
+
 #+BEGIN_SRC clojure :noweb-ref const
   (def ^:const PI Math/PI)
   (def ^:const TWO_PI (* PI 2.0))
@@ -30,16 +51,21 @@
   (def ^:const RAD (/ PI 180.0))
 #+END_SRC
 *** Dynamic \epsilon config
+
 #+BEGIN_SRC clojure :noweb-ref const
   (def ^:dynamic *eps* 1e-6)
 #+END_SRC
+
 *** Dynamic PRNG
+
 #+BEGIN_SRC clojure :noweb-ref const
   (def ^:dynamic *rnd* #+clj (java.util.Random.) #+cljs Math/random)
 #+END_SRC
+
 ** Functions
 *** Basics
 **** Absolute value & difference
+
 #+BEGIN_SRC clojure :noweb-ref math
   ,#+clj  (defn abs [x] (if (neg? x) (- x) x))
   ,#+cljs (def abs Math/abs)
@@ -50,6 +76,7 @@
 #+END_SRC 
 
 **** Piecewise and recursive equality check with \epsilon value
+
 #+BEGIN_SRC clojure :noweb-ref tpl-delta-eq
   (delta= ([a b] (and (number? b) (<= (abs (- a b)) *eps*))) ([a b eps] (and (number? b) (<= (abs (- a b)) eps))))
 #+END_SRC
@@ -125,7 +152,9 @@
        (if (delta= 0.0 x delta) 0
            (if (neg? x) -1 1))))
 #+END_SRC
+
 *** Intervals
+
 #+BEGIN_SRC clojure :noweb-ref math
   (defn clamp
     [x min max] (if (< x min) min (if (> x max) max x)))
@@ -169,7 +198,9 @@
     resolution 1/x."
     [x] (map #(/ % (double x)) (range (inc x))))
 #+END_SRC
+
 *** Interpolation
+
 #+BEGIN_SRC clojure :noweb-ref math
   (defn mix
     [a b t] (mm/submadd b a t a))
@@ -182,7 +213,9 @@
     (let [t (clamp (mm/subdiv x e0 e1 e0) 0.0 1.0)]
       (* t (* t (mm/madd t -2.0 3.0)))))
 #+END_SRC
+
 *** Rounding
+
 #+BEGIN_SRC clojure :noweb-ref math
   #+clj  (defn floor
            [x] (long (Math/floor x)))
@@ -217,13 +250,17 @@
   (defn fdim
     [x y] (if (> x y) (- x y) 0))
 #+END_SRC
+
 *** Trigonometry
+
 #+BEGIN_SRC clojure :noweb-ref math
   (defn radians [x] (* x RAD))
 
   (defn degrees [x] (* x DEG))
 #+END_SRC
+
 *** Advanced
+
 #+BEGIN_SRC clojure :noweb-ref math
   (defn maxmag
     [x y]
@@ -267,7 +304,9 @@
     [k t]
     (let [h (* k t)] (* h (Math/exp (- 1.0 h)))))
 #+END_SRC
+
 *** Randomness
+
 #+BEGIN_SRC clojure :noweb-ref math
   #+clj  (defn random
            ([] (.nextDouble ^java.util.Random *rnd*))
@@ -283,7 +322,9 @@
   #+cljs (defn randnorm
            [] (dec (* (*rnd*) 2.0)))
 #+END_SRC
+
 *** Statistics
+
 **** Percentiles
 - http://en.wikipedia.org/wiki/Percentile
 - http://en.wikipedia.org/wiki/Quartile
@@ -320,6 +361,7 @@
 #+END_SRC
 
 **** Distributions
+
 #+BEGIN_SRC clojure :noweb-ref math 
   (defn normdist-weights
     ([n] (normdist-weights n 1.0))
@@ -329,7 +371,8 @@
          (map #(* s %) ws))))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/math/core.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.math.core
     ,#+clj (:require [thi.ng.macromath.core :as mm])

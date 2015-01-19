@@ -1,10 +1,21 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommondataheap][Namespace: thi.ng.common.data.heap]]
+     - [[#todo-make-cljs-compatible][TODO make CLJS compatible]]
+     - [[#type-definition][Type definition]]
+     - [[#heap-operations][Heap operations]]
+     - [[#constructors][Constructors]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.data.heap
+
+** TODO make CLJS compatible
 
 ** Type definition
 
 #+BEGIN_SRC clojure :noweb-ref impl
+  ,#+clj
   (deftype PersistentHeap
       [^clojure.lang.PersistentVector heap
        ^long n
@@ -73,6 +84,7 @@
 ** Heap operations
 
 #+BEGIN_SRC clojure :noweb-ref ops
+  ,#+clj
   (defn- percolate+
     [heap compare ^long k]
     (let [v (heap k)]
@@ -85,6 +97,7 @@
               (persistent! (assoc! heap k v))))
           (persistent! (assoc! heap k v))))))
 
+  ,#+clj
   (defn- percolate-
     [heap n compare ^long k]
     (let [n2 (bit-shift-right n 1)
@@ -102,6 +115,7 @@
               (recur (assoc! heap k cval) child)))
           (persistent! (assoc! heap k v))))))
 
+  ,#+clj
   (defn- rebalance
     [heap compare]
     (let [n (count heap)]
@@ -110,6 +124,7 @@
           (recur (percolate- heap n compare k) (dec k))
           heap))))
 
+  ,#+clj
   (defn- delete-head
     [heap compare]
     (let [n (count heap)]
@@ -118,10 +133,12 @@
         1 []
         (percolate- (assoc (pop heap) 0 (peek heap)) (dec n) compare 0))))
 
+  ,#+clj
   (defn delete-at
     [heap compare k]
     (rebalance (into (subvec heap 0 k) (subvec heap (inc k))) compare))
 
+  ,#+clj
   (defn- ordered
     [heap compare]
     (loop [acc [], h heap]
@@ -133,12 +150,15 @@
 ** Constructors
 
 #+BEGIN_SRC clojure :noweb-ref ctor
+  ,#+clj
   (defn heap
     [& coll]
     (if (fn? (first coll))
       (reduce conj (PersistentHeap. [] 0 (first coll) nil) (rest coll))
       (reduce conj (PersistentHeap. [] 0 compare nil) coll)))
 #+END_SRC
+
+** Complete namespace definition
 
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/heap.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.data.heap)

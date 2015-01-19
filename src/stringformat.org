@@ -1,5 +1,11 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommonstringformat][Namespace: thi.ng.common.stringformat]]
+     - [[#number-parsers][Number parsers]]
+     - [[#number-formatters][Number formatters]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.stringformat
 
 ** Number parsers
@@ -44,6 +50,7 @@
 #+END_SRC
 
 ** Number formatters
+
 #+BEGIN_SRC clojure :noweb-ref formatters
   (def float
     (memoize
@@ -95,7 +102,7 @@
       {:yyyy-mm-dd [str "-" d2 "-" d2]
        :yyyy-mm-dd-hh-mm-ss [str "-" d2 "-" d2 " " d2 ":" d2 ":" d2]
        :dd-mm-yyyy [d2 "/" d2 "/" str]
-       :dd-mm-yy   [d2 "/" d2 "/" (comp (trunc-right 2) str)]}))
+       :dd-mm-yy   [d2 "/" d2 "/" (comp str #(rem % 100))]}))
 
   ,#+clj
   (defn format
@@ -118,7 +125,8 @@
         (apply str s))))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/stringformat.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.stringformat
     (:refer-clojure :exclude [float format]))

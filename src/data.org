@@ -1,8 +1,17 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommondata][Namespace: thi.ng.common.data]]
+     - [[#indexing-functions][Indexing functions]]
+     - [[#sets][Sets]]
+     - [[#sequence-functions][Sequence functions]]
+     - [[#string-functions][String functions]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.data
 
 ** Indexing functions
+
 #+BEGIN_SRC clojure :noweb-ref index
   (defn index
     [i t]
@@ -44,7 +53,9 @@
     (let [keys (collect-set f coll)]
       (zipmap keys (if (= f2 identity) keys (map f2 keys)))))
 #+END_SRC
+
 ** Sets
+
 #+BEGIN_SRC clojure :noweb-ref sets
 (defn interval-set
   [& ivals]
@@ -62,7 +73,9 @@
       (if (const x) x
           (some (fn [[a b]] (and (<= a x) (<= x b))) ivals)))))
 #+END_SRC
+
 ** Sequence functions
+
 #+BEGIN_SRC clojure :noweb-ref seqs
   (defn cartesian-product
     "All the ways to take one item from each sequence
@@ -150,7 +163,7 @@
   (defn apply-to-keys
     "Applies `f` with `args` to all given `keys` in `type`."
     [type keys f & args]
-    (reduce (fn[acc k] (assoc acc k (apply f (get type k) args))) type keys))
+    (reduce (fn [acc k] (assoc acc k (apply f (get type k) args))) type keys))
 
   (defn reduce-pairs
     ([f1 f2 coll] (reduce-pairs f1 f2 nil coll))
@@ -203,7 +216,9 @@
   (defn iterate-n
     [n f x] (->> x (iterate f) (take n) (last)))
 #+END_SRC
+
 ** String functions
+
 #+BEGIN_SRC clojure :noweb-ref strings
   (defn unwrap-string [s n] (subs s n (- (count s) n)))
   
@@ -216,7 +231,7 @@
   (defn demunge-flags
     "Takes a keyword or string and string/seq of items, returns map with
     items as keys and boolean values indicating if an item has been
-    found in the string representation of the kw. If `kw` is nil, return
+    found in the string representation of the kw. If `kw` is nil, returns
     nil.
   
         (demunge-flags :cad \"abcd\")
@@ -241,7 +256,8 @@
         (map #(<= 0 (.indexOf flags (str %))) xs))))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/core.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.data.core)
 

@@ -1,5 +1,11 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommondataunionfind][Namespace: thi.ng.common.data.unionfind]]
+     - [[#protocol-definition][Protocol definition]]
+     - [[#disjoint-set][Disjoint Set]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.data.unionfind
 
 ** Protocol definition
@@ -80,7 +86,8 @@
     ([xs] (reduce (partial apply union) (DisjointSet. {} {}) xs)))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/unionfind.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.data.unionfind
     (:require

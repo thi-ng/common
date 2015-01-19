@@ -1,8 +1,14 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommonerror][Namespace: thi.ng.common.error]]
+     - [[#error-throwing-functions][Error throwing functions]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.error
 
 ** Error throwing functions
+
 #+BEGIN_SRC clojure :noweb-ref errors
   (defn throw!
     [^String msg]
@@ -31,7 +37,8 @@
         ,#+cljs (js/Error. msg))))
 #+END_SRC
 
-** Complete namespace definition                                   :noexport:
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/error.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.error)
 

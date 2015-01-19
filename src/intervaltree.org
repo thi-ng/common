@@ -1,5 +1,11 @@
 #+SETUPFILE: setup.org
 
+* Contents                                                         :toc_4_gh:
+ - [[#namespace-thingcommondataintervaltree][Namespace: thi.ng.common.data.intervaltree]]
+     - [[#type-definitions][Type definitions]]
+     - [[#constructor][Constructor]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
 * Namespace: thi.ng.common.data.intervaltree
 
 This namespace contains an implementation of centered interval trees
@@ -15,6 +21,8 @@ one of the four presets: =closed=, =<open=, =open>= or =open=.
 Furthermore multiple values can be mapped to the same interval, but
 adding values is idempotent (provided a value is always associated
 with the same interval).
+
+** Type definitions
 
 #+BEGIN_SRC clojure :noweb-ref impl
   (defprotocol PIntervalTree
@@ -91,20 +99,26 @@ with the same interval).
     Object
     (toString
       [_]
-      (str ":median " median
-           ", :left " (pr-str left)
-           ", :right " (pr-str right)
-           ", :c-left " (pr-str c-left)
-           ", :c-right " (pr-str c-right)
+      (str ":m " median
+           ", :l " (pr-str left)
+           ", :r " (pr-str right)
+           ", :cl " (pr-str c-left)
+           ", :cr " (pr-str c-right)
            )))
-  
+#+END_SRC
+
+** Constructor
+
+#+BEGIN_SRC clojure :noweb-ref ctor
   (defn interval-tree
     ([x]
        (IntervalNode. x nil nil (sorted-map-by sort-min) (sorted-map-by sort-max)))
     ([x coll]
        (reduce (fn [t [k v]] (add-interval t k v)) (interval-tree x) coll)))
 #+END_SRC
-** Complete namespace definition                                   :noexport:
+
+** Complete namespace definition
+
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/data/intervaltree.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.data.intervaltree
    #+cljs (:require-macros [thi.ng.macromath.core :as mm])
@@ -114,4 +128,6 @@ with the same interval).
     #+clj [thi.ng.macromath.core :as mm]))
 
   <<impl>>
+
+  <<ctor>>
  #+END_SRC
