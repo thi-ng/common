@@ -241,6 +241,9 @@
   #+cljs (defn floor-pow2
            [x] (Math/pow 2 (int (/ (Math/log x) LOG2))))
 
+  (defn bit-count
+    [x] (ceil (/ (Math/log x) LOG2)))
+
   (defn trunc
     [x] (if (neg? x) (ceil x) (floor x)))
 
