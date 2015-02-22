@@ -33,6 +33,16 @@
     [in])
 
   ,#+clj
+  (defn read-int16-be
+    [^InputStream in]
+    (let [buf (byte-array 2)]
+      (.read in buf 0 2)
+      (bit-or (byte->int (aget buf 1)) (bit-shift-left (byte->int (aget buf 0)) 8))))
+  ,#+cljs
+  (defn read-int16-be
+    [in])
+
+  ,#+clj
   (defn read-int32-le
     [^InputStream in]
     (let [buf (byte-array 4)]
@@ -47,6 +57,20 @@
     [in])
 
   ,#+clj
+  (defn read-int32-be
+    [^InputStream in]
+    (let [buf (byte-array 4)]
+      (.read in buf 0 4)
+      (bit-or
+       (byte->int (aget buf 3))
+       (bit-shift-left (byte->int (aget buf 2)) 8)
+       (bit-shift-left (byte->int (aget buf 1)) 16)
+       (bit-shift-left (byte->int (aget buf 0)) 24))))
+  ,#+cljs
+  (defn read-int32-be
+    [in])
+
+  ,#+clj
   (defn read-float-le
     [^InputStream in]
     (Float/intBitsToFloat (unchecked-int (read-int32-le in))))
@@ -55,11 +79,27 @@
     [in])
 
   ,#+clj
+  (defn read-float-be
+    [^InputStream in]
+    (Float/intBitsToFloat (unchecked-int (read-int32-be in))))
+  ,#+cljs
+  (defn read-float-be
+    [in])
+
+  ,#+clj
   (defn read-vec3-le
     [^InputStream in]
     [(read-float-le in) (read-float-le in) (read-float-le in)])
   ,#+cljs
   (defn read-ve3-le
+    [in])
+
+  ,#+clj
+  (defn read-vec3-be
+    [^InputStream in]
+    [(read-float-be in) (read-float-be in) (read-float-be in)])
+  ,#+cljs
+  (defn read-ve3-be
     [in])
 #+END_SRC
 
