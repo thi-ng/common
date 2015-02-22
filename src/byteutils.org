@@ -122,10 +122,23 @@
      out
      (byte-array
       [(unchecked-byte (bit-and x 0xff))
-       (unchecked-byte (bit-and (bit-shift-right x 8) 0xff))]))
+       (unchecked-byte (bit-and (unsigned-bit-shift-right x 8) 0xff))]))
     out)
   ,#+cljs
   (defn write-int16-le
+    [out x])
+
+  ,#+clj
+  (defn write-int16-be
+    [^OutputStream out x]
+    (.write
+     out
+     (byte-array
+      [(unchecked-byte (bit-and (unsigned-bit-shift-right x 8) 0xff))
+       (unchecked-byte (bit-and x 0xff))]))
+    out)
+  ,#+cljs
+  (defn write-int16-be
     [out x])
 
   ,#+clj
@@ -135,12 +148,27 @@
      out
      (byte-array
       [(unchecked-byte (bit-and x 0xff))
-       (unchecked-byte (bit-and (bit-shift-right x 8) 0xff))
-       (unchecked-byte (bit-and (bit-shift-right x 16) 0xff))
-       (unchecked-byte (bit-shift-right x 24))]))
+       (unchecked-byte (bit-and (unsigned-bit-shift-right x 8) 0xff))
+       (unchecked-byte (bit-and (unsigned-bit-shift-right x 16) 0xff))
+       (unchecked-byte (unsigned-bit-shift-right x 24))]))
     out)
   ,#+cljs
   (defn write-int32-le
+    [out x])
+
+  ,#+clj
+  (defn write-int32-be
+    [^OutputStream out x]
+    (.write
+     out
+     (byte-array
+      [(unchecked-byte (unsigned-bit-shift-right x 24))
+       (unchecked-byte (bit-and (unsigned-bit-shift-right x 16) 0xff))
+       (unchecked-byte (bit-and (unsigned-bit-shift-right x 8) 0xff))
+       (unchecked-byte (bit-and x 0xff))]))
+    out)
+  ,#+cljs
+  (defn write-int32-be
     [out x])
 
   ,#+clj
@@ -152,6 +180,14 @@
     [out x])
 
   ,#+clj
+  (defn write-float-be
+    [^OutputStream out x]
+    (write-int32-be out (Float/floatToRawIntBits x)))
+  ,#+cljs
+  (defn write-float-be
+    [out x])
+
+  ,#+clj
   (defn write-vec3-le
     [^OutputStream out [x y z]]
     (write-float-le out x)
@@ -159,6 +195,16 @@
     (write-float-le out z))
   ,#+cljs
   (defn write-vec3-le
+    [out [x y z]])
+
+  ,#+clj
+  (defn write-vec3-be
+    [^OutputStream out [x y z]]
+    (write-float-be out x)
+    (write-float-be out y)
+    (write-float-be out z))
+  ,#+cljs
+  (defn write-vec3-be
     [out [x y z]])
 #+END_SRC
 
