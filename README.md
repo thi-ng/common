@@ -8,5 +8,5 @@ Please see [index.org](src/index.org) for further information.
 ## Current Leiningen coordinates
 
 ```clj
-[thi.ng/common "0.3.0"]
+[thi.ng/common "0.3.1"]
 ```
