@@ -18,7 +18,7 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 ** Injected properties
 
 #+BEGIN_SRC clojure :noweb-ref version
-0.3.1-SNAPSHOT
+0.3.1
 #+END_SRC
 
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
@@ -79,6 +79,7 @@ target/common-<<version>>.js
 
 | *Version* | *Released* | *Description*                | *Tagged Github URL* |
 |-----------+------------+------------------------------+---------------------|
+|     0.3.1 | 2015-03-15 | bugfixes, update byteutils   | [[https://github.com/thi-ng/common/tree/0.3.1][0.3.1]]               |
 |     0.3.0 | 2015-01-19 | last version before split up | [[https://github.com/thi-ng/common/tree/0.3.0][0.3.0]]               |
 |     0.2.0 | 2014-09-09 |                              | [[https://github.com/thi-ng/common/tree/0.2.0][0.2.0]]               |
 |     0.1.2 | 2014-03-10 | 1st public release           | [[https://github.com/thi-ng/common/tree/0.1.2][0.1.2]]               |
