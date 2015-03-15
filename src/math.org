@@ -44,8 +44,8 @@
 
   (def ^:const LOG2 (Math/log 2.0))
 
-  (def ^:const INF- #+clj Double/POSITIVE_INFINITY #+cljs (.-POSITIVE_INFINITY js/Number))
-  (def ^:const INF+ #+clj Double/NEGATIVE_INFINITY #+cljs (.-NEGATIVE_INFINITY js/Number))
+  (def ^:const INF+ #+clj Double/POSITIVE_INFINITY #+cljs (.-POSITIVE_INFINITY js/Number))
+  (def ^:const INF- #+clj Double/NEGATIVE_INFINITY #+cljs (.-NEGATIVE_INFINITY js/Number))
 
   (def ^:const DEG (/ 180.0 PI))
   (def ^:const RAD (/ PI 180.0))
@@ -378,6 +378,7 @@
 
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/math/core.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.math.core
+    ,#+cljs (:refer-clojure :exclude [bit-count])
     ,#+clj (:require [thi.ng.macromath.core :as mm])
     ,#+cljs (:require-macros [thi.ng.macromath.core :as mm]))
 
