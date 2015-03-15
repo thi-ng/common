@@ -1,0 +1,74 @@
+#+SETUPFILE: ../src/setup.org
+
+* Contents                                                         :toc_4_gh:
+ - [[#thingcommontestdatabyteutils][thi.ng.common.test.data.byteutils]]
+     - [[#main-tests][Main tests]]
+     - [[#complete-namespace-definition][Complete namespace definition]]
+
+* thi.ng.common.test.data.byteutils
+
+** Main tests
+
+#+BEGIN_SRC clojure :noweb-ref test
+  ,#+clj
+  (defn prepare-payload-le
+    ^ByteArrayOutputStream []
+    (with-open [out (ByteArrayOutputStream.)]
+      (b/write-int16-le out 0x1234)
+      (b/write-int16-le out 0xfeed)
+      (b/write-int32-le out 0x12345678)
+      (b/write-int32-le out 0xdecafbad)
+      (b/write-float-le out m/PI)
+      (b/write-vec3-le out [1e6 2e7 3e8])))
+
+  ,#+clj
+  (defn prepare-payload-be
+    ^ByteArrayOutputStream []
+    (with-open [out (ByteArrayOutputStream.)]
+      (b/write-int16-be out 0x1234)
+      (b/write-int16-be out 0xfeed)
+      (b/write-int32-be out 0x12345678)
+      (b/write-int32-be out 0xdecafbad)
+      (b/write-float-be out m/PI)
+      (b/write-vec3-be out [1e6 2e7 3e8])))
+
+  ,#+clj
+  (deftest test-io-le
+    (with-open [in (ByteArrayInputStream. (.toByteArray (prepare-payload-le)))]
+      (is (== 0x1234 (b/read-int16-le in)))
+      (is (== 0xfeed (b/read-int16-le in)))
+      (is (== 0x12345678 (b/read-int32-le in)))
+      (is (== 0xdecafbad (b/read-int32-le in)))
+      (is (m/delta= m/PI (b/read-float-le in)))
+      (is (m/delta= [1e6 2e7 3e8] (b/read-vec3-le in)))))
+
+  ,#+clj
+  (deftest test-io-be
+    (with-open [in (ByteArrayInputStream. (.toByteArray (prepare-payload-be)))]
+      (is (== 0x1234 (b/read-int16-be in)))
+      (is (== 0xfeed (b/read-int16-be in)))
+      (is (== 0x12345678 (b/read-int32-be in)))
+      (is (== 0xdecafbad (b/read-int32-be in)))
+      (is (m/delta= m/PI (b/read-float-be in)))
+      (is (m/delta= [1e6 2e7 3e8] (b/read-vec3-be in)))))
+#+END_SRC
+
+** Complete namespace definition
+
+#+BEGIN_SRC clojure :tangle ../babel/test/cljx/thi/ng/common/test/data/byteutils.cljx :noweb yes :mkdirp yes :padline no
+  (ns thi.ng.common.test.data.byteutils
+    ,#+cljs
+    (:require-macros
+     [cemerick.cljs.test :refer [is deftest]])
+    (:require
+     [thi.ng.common.data.byteutils :as b]
+     [thi.ng.common.math.core :as m]
+     ,#+clj [clojure.java.io :as io]
+     ,#+clj [clojure.test :refer :all]
+     ,#+cljs [cemerick.cljs.test :as t])
+    ,#+clj
+    (:import
+     [java.io ByteArrayOutputStream ByteArrayInputStream]))
+
+  <<test>>
+#+END_SRC
