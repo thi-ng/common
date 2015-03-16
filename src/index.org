@@ -239,3 +239,4 @@ symbol =version= holding the version string defined above:
 * Tests
 
 - [[../test/math.org][thi.ng.common.test.math.core]]
+- [[../test/byteutils.org][thi.ng.common.test.data.byteutils]]
