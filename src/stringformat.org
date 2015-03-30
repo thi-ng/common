@@ -47,6 +47,10 @@
     [x & [default]]
     (let [x' (js/parseFloat x)]
       (if (js/isNaN x') default x')))
+
+  ,#+cljs
+  (defn parse-boolean
+    [x] (= "true" (str/lower-case x)))
 #+END_SRC
 
 ** Number formatters
@@ -129,7 +133,9 @@
 
 #+BEGIN_SRC clojure :tangle ../babel/src/cljx/thi/ng/common/stringformat.cljx :noweb yes :mkdirp yes :padline no
   (ns thi.ng.common.stringformat
-    (:refer-clojure :exclude [float format]))
+    (:refer-clojure :exclude [float format])
+    (:require
+     [clojure.string :as str]))
 
   <<parsers>>
 
