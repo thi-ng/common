@@ -18,7 +18,7 @@ This project is open source and licensed under the [[http://www.apache.org/licen
 ** Injected properties
 
 #+BEGIN_SRC clojure :noweb-ref version
-0.3.1
+0.3.2
 #+END_SRC
 
 #+BEGIN_SRC clojure :exports none :noweb-ref project-url
@@ -41,11 +41,11 @@ target/common-<<version>>.js
 *** Runtime
 **** [[https://github.com/clojure/clojure][Clojure]]
 #+BEGIN_SRC clojure :noweb-ref dep-clj
-[org.clojure/clojure "1.6.0"]
+[org.clojure/clojure "1.7.0-beta2"]
 #+END_SRC
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
-[org.clojure/clojurescript "0.0-2913"]
+[org.clojure/clojurescript "0.0-3269"]
 #+END_SRC
 **** [[https://github.com/thi-ng/macromath][Macromath]]
 #+BEGIN_SRC clojure :noweb-ref dep-mmath
@@ -79,6 +79,7 @@ target/common-<<version>>.js
 
 | *Version* | *Released* | *Description*                | *Tagged Github URL* |
 |-----------+------------+------------------------------+---------------------|
+|     0.3.2 | 2015-05-14 | add time format, update deps | [[https://github.com/thi-ng/common/tree/0.3.2][0.3.2]]               |
 |     0.3.1 | 2015-03-15 | bugfixes, update byteutils   | [[https://github.com/thi-ng/common/tree/0.3.1][0.3.1]]               |
 |     0.3.0 | 2015-01-19 | last version before split up | [[https://github.com/thi-ng/common/tree/0.3.0][0.3.0]]               |
 |     0.2.0 | 2014-09-09 |                              | [[https://github.com/thi-ng/common/tree/0.2.0][0.2.0]]               |

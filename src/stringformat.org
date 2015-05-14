@@ -106,7 +106,8 @@
       {:yyyy-mm-dd [str "-" d2 "-" d2]
        :yyyy-mm-dd-hh-mm-ss [str "-" d2 "-" d2 " " d2 ":" d2 ":" d2]
        :dd-mm-yyyy [d2 "/" d2 "/" str]
-       :dd-mm-yy   [d2 "/" d2 "/" (comp str #(rem % 100))]}))
+       :dd-mm-yy   [d2 "/" d2 "/" (comp str #(rem % 100))]
+       :hh-mm-ss   [d2 ":" d2 ":" d2]}))
 
   ,#+clj
   (defn format
