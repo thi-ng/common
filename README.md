@@ -7,6 +7,7 @@ Utility belt of datastructures and functions shared by other
 
 Completed:
 
+- [thi.ng/dstruct](https://github.com/thi-ng/dstruct)
 - [thi.ng/math](https://github.com/thi-ng/math)
 - [thi.ng/strf](https://github.com/thi-ng/strf)
 
